@@ -4,9 +4,9 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>🌌 Cosmic Trip Picker — Hidden India</title>
-<meta name="description" content="Classy psychedelic cosmos UI for voting on offbeat India trips. Live filters, funny vote bursts, leaderboard, Google links." />
+<meta name="description" content="Classy psychedelic cosmos UI for voting on offbeat India trips. Live filters, fun vote bursts, leaderboard, Google links." />
 
-<!-- Social preview (edit these once you host a cover.png) -->
+<!-- Social preview (edit URL if you add cover.png) -->
 <meta property="og:title" content="Cosmic Trip Picker — Hidden India" />
 <meta property="og:description" content="Vote on unique trips. Starry UI, live leaderboard, Google links, shareable votes." />
 <meta property="og:type" content="website" />
@@ -28,13 +28,11 @@
   body{
     margin:0; color:var(--fg);
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background:#070a16;
-    overflow-x:hidden;
+    background:#070a16; overflow-x:hidden;
   }
 
   /* ===== COSMOS BACKGROUND ===== */
   canvas#stars, canvas#bursts { position:fixed; inset:0; z-index:-2; display:block }
-  /* soft nebula behind the stars */
   .nebula{
     position:fixed; inset:-25vmax; z-index:-3; filter:blur(80px) saturate(120%);
     background:
@@ -43,15 +41,8 @@
       radial-gradient(90vmax 60vmax at 40% 90%, #1a2448 0%, transparent 70%);
     opacity:.85; animation: driftNeb 40s ease-in-out infinite alternate;
   }
-  @keyframes driftNeb {
-    0% { transform: translate3d(0,0,0) }
-    100% { transform: translate3d(2vmin,-2vmin,0) }
-  }
-
-  /* Respect reduced motion */
-  @media (prefers-reduced-motion: reduce){
-    .nebula{ animation:none }
-  }
+  @keyframes driftNeb { 0%{transform:translate3d(0,0,0)} 100%{transform:translate3d(2vmin,-2vmin,0)} }
+  @media (prefers-reduced-motion: reduce){ .nebula{animation:none} }
 
   /* ===== LAYOUT ===== */
   header, .foot {
@@ -117,7 +108,6 @@
   .selected{ display:flex; flex-wrap:wrap; gap:6px }
   .pill{ display:inline-flex; align-items:center; gap:6px; background:#0e1734; border:1px solid #263469; padding:6px 10px; border-radius:999px; font-size:13px }
 
-  /* Big tap targets for phones */
   @media (max-width:600px){ .btn{ padding:12px 14px } .chip{ padding:10px 14px } .title{ font-size:19px } .why{ font-size:15px } }
 </style>
 </head>
@@ -182,7 +172,7 @@
 </div>
 
 <script>
-/* ===== DATA (our full option set) ===== */
+/* ===== DATA (all options we discussed) ===== */
 const DESTS = [
   {id:'hampi-deep', name:'Hampi + Anegundi/Sanapur + Sandur', state:'Karnataka', why:'Boulder valleys, ruins, river-island hush; red-ore canyon drives.', tags:['psy','culture','mountains','rivers','zero-crowd']},
   {id:'gokarna-arc', name:'Gokarna Quiet Arc + Kumta–Honnavar Coves', state:'Karnataka Coast', why:'Cliff trails to pocket beaches, bioluminescence nights (if lucky).', tags:['beach','psy','zero-crowd']},
@@ -219,64 +209,72 @@ const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
 const votesKey = 'tripVotes_cosmos_v1';
 const picksKey = 'tripPicks_v1';
-let votes = loadVotes();      // { id: 0|1 }
-let activeTags = new Set(['mountains','beach','forest','rivers','desert','culture','psy','zero-crowd']); // start with all on
+let votes = loadVotes(); // { id: 0|1 }
+let activeTags = new Set(['mountains','beach','forest','rivers','desert','culture','psy','zero-crowd','all']);
 let searchQ = '';
 
-/* ===== STARFIELD (subtle) ===== */
-const starC = document.getElementById('stars');
-const sb = starC.getContext('2d');
-function fit(){ starC.width=innerWidth; starC.height=innerHeight; burstsC.width=innerWidth; burstsC.height=innerHeight; }
+/* ===== CANVASES (fixed) ===== */
+const starCanvas   = document.getElementById('stars');
+const starCtx      = starCanvas.getContext('2d');
+const burstsCanvas = document.getElementById('bursts');
+const burstsCtx    = burstsCanvas.getContext('2d');
+
+function fit(){
+  starCanvas.width   = innerWidth;
+  starCanvas.height  = innerHeight;
+  burstsCanvas.width = innerWidth;
+  burstsCanvas.height= innerHeight;
+}
 addEventListener('resize', fit); fit();
+
 const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* ===== STARFIELD ===== */
 const stars = Array.from({length: prefersReduced?100:220}).map(()=>({
   x: Math.random()*innerWidth,
   y: Math.random()*innerHeight,
-  z: Math.random()*0.6+0.4, // parallax
+  z: Math.random()*0.6+0.4,  // parallax
   tw: Math.random()*0.6+0.4
 }));
 function drawStars(t){
-  sb.clearRect(0,0,starC.width,starC.height);
-  sb.fillStyle='#ffffff';
+  starCtx.clearRect(0,0,starCanvas.width,starCanvas.height);
+  starCtx.fillStyle='#fff';
   stars.forEach(s=>{
-    const y = (s.y + 0.03*s.z) % innerHeight; s.y=y;
+    const y = (s.y + 0.03*s.z) % innerHeight; s.y = y;
     const a = 0.6 + 0.4*Math.sin((t/7000 + s.x*0.002)*s.tw);
-    sb.globalAlpha=a*0.8;
-    sb.fillRect(s.x, y, 1.2*s.z, 1.2*s.z);
+    starCtx.globalAlpha = a*0.8;
+    starCtx.fillRect(s.x, y, 1.2*s.z, 1.2*s.z);
   });
 }
 
-/* ===== VOTE BURSTS (funny + classy) ===== */
-const burstsC = document.getElementById('bursts').getContext('2d');
+/* ===== VOTE BURSTS ===== */
 let particles=[];
 function burst(x,y,type='confetti',scale=1){
   const N = 24+Math.floor(Math.random()*16);
-  const push=(p)=>particles.push(p);
   for(let i=0;i<N;i++){
     const ang = Math.random()*Math.PI*2;
     const sp = (Math.random()*2+1.5)*scale;
     if(type==='emoji'){
       const emojis = ['✨','⭐','🌟','🪐','🌠','🌙','☄️','💫', Math.random()<0.08?'💩':'✨'];
-      push({x,y,vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-1.5, g:0.05, a:1, t:'emoji', txt:emojis[Math.floor(Math.random()*emojis.length)], sz:16+Math.random()*10});
+      particles.push({x,y,vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-1.5, g:0.05, a:1, t:'emoji', txt:emojis[Math.floor(Math.random()*emojis.length)], sz:16+Math.random()*10});
     }else{
       const hues=[170,195,260,320];
       const h=hues[Math.floor(Math.random()*hues.length)];
-      push({x,y,vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-1.2, g:0.06, a:1, t:'dot', c:`hsl(${h} 90% 70%)`, r:2+Math.random()*3});
+      particles.push({x,y,vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-1.2, g:0.06, a:1, t:'dot', c:`hsl(${h} 90% 70%)`, r:2+Math.random()*3});
     }
   }
 }
 function drawBursts(){
-  burstsC.clearRect(0,0,innerWidth,innerHeight);
+  burstsCtx.clearRect(0,0,burstsCanvas.width,burstsCanvas.height);
   particles.forEach(p=>{
     p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.a*=0.985;
-    burstsC.globalAlpha=p.a;
+    burstsCtx.globalAlpha=p.a;
     if(p.t==='dot'){
-      burstsC.fillStyle=p.c;
-      burstsC.beginPath(); burstsC.arc(p.x,p.y,p.r,0,Math.PI*2); burstsC.fill();
+      burstsCtx.fillStyle=p.c;
+      burstsCtx.beginPath(); burstsCtx.arc(p.x,p.y,p.r,0,Math.PI*2); burstsCtx.fill();
     }else{
-      burstsC.font = `${p.sz}px system-ui, emoji`;
-      burstsC.fillText(p.txt,p.x,p.y);
+      burstsCtx.font = `${p.sz}px system-ui, emoji`;
+      burstsCtx.fillText(p.txt,p.x,p.y);
     }
   });
   particles = particles.filter(p=>p.a>0.04 && p.y<innerHeight+40 && p.x>-40 && p.x<innerWidth+40);
@@ -391,12 +389,10 @@ document.addEventListener('click', (e)=>{
   if(r){ resetOne(r); return; }
 });
 
-/* Filters — WORKING NOW */
-const filterWrap = document.getElementById('filters');
-filterWrap.addEventListener('click', (e)=>{
+/* Filters — working */
+document.getElementById('filters').addEventListener('click', (e)=>{
   const tag = e.target?.dataset?.tag; if(!tag) return;
   if(tag==='all'){
-    // toggle "All": if turning on, enable all; if turning off, keep current
     const chip = e.target; const on = chip.classList.contains('on');
     if(!on){ activeTags = new Set(['all']); $$('.chip').forEach(c=>c.classList.add('on')) }
     else { activeTags.delete('all'); chip.classList.remove('on') }
@@ -422,7 +418,7 @@ $('#sortVotes').addEventListener('click', (e)=>{
 $('#resetVotes').addEventListener('click', ()=>{ if(confirm('Reset all votes on this device?')){ votes={}; saveVotes(); render(); } });
 $('#share').addEventListener('click', shareVotes);
 
-/* ===== LOOPS ===== */
+/* ===== RAF LOOPS ===== */
 let last=0;
 function loop(ts){
   if(!last) last=ts;
