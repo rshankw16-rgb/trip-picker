@@ -2,114 +2,184 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🌈 Trip Picker — Offbeat India</title>
-<meta name="description" content="Vote on unique, hidden-trip ideas. Psychedelic UI, live leaderboard, Google links, sharable votes." />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>🌿 Psychedelic Trip Picker — Hidden India</title>
+<meta name="description" content="Animated, classy, psychedelic picker for offbeat India trips. Vote, share, and explore." />
 
-<!-- WhatsApp / social preview -->
-<meta property="og:title" content="Trippy Trip Picker — Offbeat India" />
-<meta property="og:description" content="Tap to vote. Hampi, Meghalaya, Maharashtra forests, and more. Live leaderboard." />
+<!-- Social preview (edit domain if you add a cover.png) -->
+<meta property="og:title" content="Psychedelic Trip Picker — Hidden India" />
+<meta property="og:description" content="Vote on wild, offbeat destinations. Live leaderboard + Google links." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://YOUR-USERNAME.github.io/YOUR-REPO/" />
 <meta property="og:image" content="https://YOUR-USERNAME.github.io/YOUR-REPO/cover.png" />
 <meta name="twitter:card" content="summary_large_image" />
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2288%22>🌿</text></svg>">
+
 <style>
   :root{
-    --bg0:#06060f; --fg:#ecf2ff; --muted:#a9b7e6; --line:#233;
-    --chip:#171732; --chipo:#24245a; --accent:#78ffd6; --hot:#ffd166;
-    --card:#0e1030; --card2:#0a0d24; --glow:#7cf6c333;
+    --fg:#edf3ff; --muted:#b8c7ef; --line:#1f294a;
+    --glass:#0b1226aa; --glass2:#0b1120cc; --glow:#83ffd555;
+    --card:#0b1226; --card2:#0a0f20;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0; color:var(--fg); font-family: ui-sans-serif,system-ui,Segoe UI,Roboto,Helvetica,Arial;
-    background: radial-gradient(1200px 600px at 0% -10%, #2525a8 0%, transparent 60%),
-               radial-gradient(1000px 600px at 120% 10%, #BD34FE44 0%, transparent 60%),
-               linear-gradient(160deg, #0b0b1c, #09091a 70%);
+    margin:0; color:var(--fg);
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background:#070912;
     overflow-x:hidden;
   }
-  /* animated nebula */
+
+  /* ===== BACKGROUND ANIMATION (visible & obvious) ===== */
   .bg {
-    position:fixed; inset:-20vmax; z-index:-1; filter:blur(60px) saturate(130%);
+    position:fixed; inset:-30vmax; z-index:-3; filter:blur(80px) saturate(120%);
+    /* animated hue rotates conic + radial gradients */
     background:
-      conic-gradient(from 90deg at 50% 50%, #00ffd5 0%, #7e59ff 25%, #ff3cac 50%, #00ffd5 75%, #7e59ff 100%);
-    animation: spin 30s linear infinite; opacity:.55;
+      conic-gradient(from calc(var(--h,0deg)) at 50% 50%,
+        hsl(calc(var(--hh,160)) 90% 55%) 0%,
+        hsl(calc(var(--hh,200)) 90% 55%) 20%,
+        hsl(calc(var(--hh,280)) 90% 55%) 40%,
+        hsl(calc(var(--hh,330)) 90% 60%) 60%,
+        hsl(calc(var(--hh,200)) 90% 55%) 80%,
+        hsl(calc(var(--hh,160)) 90% 55%) 100%)
+      ,radial-gradient(1200px 800px at 20% -10%, #1b365d 0%, transparent 60%)
+      ,radial-gradient(900px 700px at 120% 10%, #0e274f 0%, transparent 60%);
+    opacity:.8;
+    animation: hue 36s linear infinite;
   }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce){ .bg{animation:none} }
+  @keyframes hue {
+    0%   { --h:0deg;   --hh:160 }
+    50%  { --h:180deg; --hh:260 }
+    100% { --h:360deg; --hh:160 }
+  }
 
-  header, .footbar {position:sticky; inset-inline:0; backdrop-filter: blur(10px) saturate(140%);
-    background:#07071acc; z-index:40; border-block:1px solid #1a1f3b}
-  header{top:0} .footbar{bottom:0}
+  /* Drifting organic blobs */
+  .blob {
+    position:fixed; width:55vmin; aspect-ratio:1; border-radius:60%;
+    background: radial-gradient(circle at 30% 30%, #9fffe6 0%, #6cd4ff 40%, transparent 70%);
+    mix-blend-mode: screen; filter: blur(28px) saturate(120%);
+    opacity:.24; z-index:-2;
+    animation: drift 22s ease-in-out infinite;
+  }
+  .blob.b2{
+    width:70vmin; left:10%; top:60%;
+    background: radial-gradient(circle at 60% 40%, #ff76d4 0%, #a46bff 40%, transparent 70%);
+    animation-duration: 28s; animation-delay:-5s;
+  }
+  .blob.b3{
+    width:50vmin; right:5%; top:15%;
+    background: radial-gradient(circle at 40% 60%, #ffe66d 0%, #80ffea 35%, transparent 70%);
+    animation-duration: 32s; animation-delay:-10s;
+  }
+  @keyframes drift {
+    0%   { transform: translate(0,0) rotate(0deg) }
+    50%  { transform: translate(10vmin,-6vmin) rotate(120deg) }
+    100% { transform: translate(0,0) rotate(360deg) }
+  }
+
+  /* Fine grain for classy texture */
+  .grain {
+    position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.08;
+    background-image: url('data:image/svg+xml;utf8,\
+      <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160">\
+      <filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter>\
+      <rect width="100%" height="100%" filter="url(%23n)" opacity="0.25"/></svg>');
+    background-size: 240px 240px;
+    mix-blend-mode: soft-light;
+    animation: grain 1.5s steps(2) infinite;
+  }
+  @keyframes grain { to { transform: translate3d(-1%,1%,0) } }
+
+  /* Respect users who prefer less motion */
+  @media (prefers-reduced-motion: reduce){
+    .bg, .blob, .grain { animation:none }
+  }
+
+  /* ===== LAYOUT ===== */
+  header, .foot {
+    position:sticky; inset-inline:0; backdrop-filter: blur(10px) saturate(160%);
+    background: var(--glass2); border-block:1px solid var(--line); z-index:20;
+  }
+  header{ top:0 } .foot{ bottom:0 }
   .wrap{max-width:1180px; margin:0 auto; padding:14px 16px}
-  h1{margin:0 0 6px; font-weight:900; letter-spacing:.2px}
-  .sub{margin:0 0 10px; color:var(--muted)}
-  .toolbar{display:flex; gap:8px; flex-wrap:wrap}
-  .chip{padding:8px 12px; border-radius:999px; background:var(--chip); color:#d3e4ff;
-        border:1px solid #2a2f5a; cursor:pointer; user-select:none; transition:.15s}
-  .chip.on{background:var(--chipo); border-color:#3b438b; box-shadow:0 0 0 1px #3b438b inset}
-  .chip:hover{transform:translateY(-1px)}
+  h1{margin:0 0 4px; font-weight:900; letter-spacing:.2px}
+  .sub{margin:0; color:var(--muted)}
+  .toolbar{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+  .chip{
+    padding:9px 12px; border-radius:999px; background:#121a3a; color:#dce8ff;
+    border:1px solid #273364; user-select:none; cursor:pointer; transition:.15s;
+  }
+  .chip.on{ background:#1a2350; border-color:#3d4b8f; box-shadow:0 0 0 1px #3d4b8f inset }
+  .chip:hover{ transform: translateY(-1px) }
+
   .searchbar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px}
-  input[type="search"]{background:#0a0d24; color:var(--fg); border:1px solid #242a55; padding:10px 12px; border-radius:12px; flex:1; min-width:200px}
-  .btn{background:#0c1030; color:#eaf7ff; border:1px solid #2a3569; padding:10px 12px; border-radius:12px; cursor:pointer; transition:.15s; font-weight:800}
-  .btn:hover{transform:translateY(-1px)}
-  .btn.hot{background:linear-gradient(90deg,#18d1a0,#88f); color:#031116; border-color:#47e2d4}
-  .btn.ghost{background:transparent}
-  .hint{color:#9eb1ec; font-size:12px}
+  input[type="search"]{
+    background:#0b1226; color:var(--fg); border:1px solid #23315e;
+    padding:10px 12px; border-radius:12px; flex:1; min-width:220px
+  }
+  .btn{
+    background:#0e1533; color:#eaf6ff; border:1px solid #2a3569;
+    padding:10px 12px; border-radius:12px; cursor:pointer; transition:.15s; font-weight:800
+  }
+  .btn:hover{ transform: translateY(-1px) }
+  .btn.hot{ background:linear-gradient(90deg,#17d1a0,#87a9ff); color:#021013; border-color:#46e1d3 }
+  .btn.ghost{ background:transparent }
+  .hint{ color:#9fb3eb; font-size:12px }
 
-  .layout{display:grid; grid-template-columns:1fr 330px; gap:16px}
-  @media (max-width: 1000px){ .layout{grid-template-columns:1fr} }
+  .layout{ display:grid; grid-template-columns: 1fr 330px; gap:16px; }
+  @media (max-width: 980px){ .layout{ grid-template-columns: 1fr } }
 
-  .grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); padding:16px 0 120px}
+  .grid{ display:grid; gap:14px; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); padding:16px 0 120px; }
 
+  /* ===== CARDS ===== */
   .card{
-    background:linear-gradient(180deg,var(--card),var(--card2));
-    border:1px solid #20264c; border-radius:18px; padding:14px; position:relative; overflow:hidden;
-    box-shadow:0 14px 30px -20px #000, 0 0 0 1px #0a132b inset; transform-style:preserve-3d;
-    transition: transform .2s ease, box-shadow .2s ease;
+    background: linear-gradient(180deg, var(--card), var(--card2));
+    border: 1px solid #20284d; border-radius: 18px; padding: 15px;
+    position:relative; overflow:hidden;
+    box-shadow: 0 16px 36px -22px #000, 0 0 0 1px #0f1a36 inset;
   }
-  @media (hover:hover){
-    .card:hover{transform: perspective(700px) rotateX(2deg) rotateY(-2deg) translateY(-2px);
-      box-shadow:0 24px 40px -20px #000, 0 0 0 1px #1b2a66 inset}
+  .badge{
+    position:absolute; top:10px; right:10px; font-size:12px; padding:4px 8px; border-radius:999px;
+    border:1px solid #2a376a; background:#0d1633bb; color:#b8c7ff
   }
-  .badge{position:absolute; top:10px; right:10px; font-size:12px; padding:4px 8px; border-radius:999px;
-         border:1px solid #2a376a; background:#0d1633; color:#b8c7ff}
-  .title{font-weight:900; font-size:18px; margin:2px 32px 6px 0}
-  .meta{color:#bcd0ff; font-size:12px; display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 10px}
-  .tag{font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid #2b3767; background:#0e1633}
-  .why{color:#e5edff; font-size:14px; margin:6px 0 10px}
-  .actions{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
-  .vote{display:inline-flex; align-items:center; gap:6px}
-  .count{font-weight:900; color:var(--hot)}
-  .liked{background:linear-gradient(90deg,#1c9,#7ef) !important; color:#041a15 !important; border-color:#48e2d4 !important}
+  .title{ font-weight:900; font-size:18px; margin:2px 32px 6px 0 }
+  .meta{ color:#cfe0ff; font-size:12px; display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 10px }
+  .tag{ font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid #2b3767; background:#0e1633 }
+  .why{ color:#e7efff; font-size:14px; margin:4px 0 12px }
+  .actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center }
+  .count{ font-weight:900; color:#ffd166 }
+  .liked{ background:linear-gradient(90deg,#1cc9a3,#80f)!important; color:#021611!important; border-color:#44e4d8!important }
+  .soft-glow{ position:absolute; inset:-40%; background:radial-gradient(60% 60% at 30% 20%, #7df6d4 0%, transparent 60%); opacity:.06; pointer-events:none }
 
-  aside .panel{background:linear-gradient(180deg,var(--card),var(--card2)); border:1px solid #20264c; border-radius:14px; padding:12px; margin:8px 0}
-  .lead .row{display:flex; justify-content:space-between; align-items:center; gap:8px}
-  .lead .name{font-weight:800} .lead .score{font-weight:900; color:var(--hot)}
-  .crown{filter:drop-shadow(0 0 6px #ffd16677)}
-
-  .footbar .wrap{display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap}
-  .selected{display:flex; flex-wrap:wrap; gap:6px}
-  .pill{display:inline-flex; align-items:center; gap:6px; background:#0e1734; border:1px solid #263469; padding:6px 10px; border-radius:999px; font-size:13px}
-
-  /* bigger tap targets for phones */
-  @media (max-width:600px){
-    .btn{padding:12px 14px}
-    .chip{padding:10px 14px}
-    .title{font-size:19px}
-    .why{font-size:15px}
+  aside .panel{
+    background: linear-gradient(180deg, #0a1126cc, #0a0f22cc);
+    border:1px solid #20284d; border-radius:14px; padding:12px; margin:8px 0
   }
+  .lead .row{ display:flex; justify-content:space-between; align-items:center; gap:8px }
+  .lead .name{ font-weight:800 }
+  .lead .score{ font-weight:900; color:#ffd166 }
+  .crown{ filter: drop-shadow(0 0 6px #ffd16688) }
+
+  .foot .wrap{ display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap }
+  .selected{ display:flex; flex-wrap:wrap; gap:6px }
+  .pill{ display:inline-flex; align-items:center; gap:6px; background:#0e1734; border:1px solid #263469; padding:6px 10px; border-radius:999px; font-size:13px }
+
+  /* Big tap targets for phones */
+  @media (max-width:600px){ .btn{ padding:12px 14px } .chip{ padding:10px 14px } .title{ font-size:19px } .why{ font-size:15px } }
 </style>
 </head>
 <body>
 <div class="bg" aria-hidden="true"></div>
+<div class="blob b1" style="left:65%; top:70%"></div>
+<div class="blob b2"></div>
+<div class="blob b3"></div>
+<div class="grain" aria-hidden="true"></div>
 
 <header>
   <div class="wrap">
-    <h1>🌈 Trippy Trip Picker — Offbeat India (Dec–Jan)</h1>
-    <p class="sub">Tap 👍 to vote (tap again to un-vote). Sort, filter, and share. Each card opens a Google search.</p>
+    <h1>🌿 Psychedelic Trip Picker — Hidden India</h1>
+    <p class="sub">Animated. Classy. Nature-vibes. Tap 👍 to vote (tap again to un-vote). Each card links to Google.</p>
 
     <div class="toolbar" id="filters">
       <div class="chip on" data-tag="mountains">Mountains</div>
@@ -127,7 +197,7 @@
       <button class="btn" id="clear">Clear</button>
       <button class="btn ghost" id="randomize">🎲 Randomize</button>
       <button class="btn hot" id="share">🔗 Share Votes</button>
-      <span class="hint">Votes are per-device (local). “Share Votes” copies a link that imports your scores.</span>
+      <span class="hint">Votes are per-device. “Share Votes” copies a link that imports your scores.</span>
     </div>
   </div>
 </header>
@@ -144,13 +214,13 @@
       </div>
       <div class="panel">
         <h3 style="margin:6px 0 4px">ℹ️ Tips</h3>
-        <p class="hint">Long-press a card’s 👍 to **reset only that card**. Use “Reset All” in the footer for a clean slate.</p>
+        <p class="hint">Long-press 👍 to reset just that card. Use “Reset All” below for a clean slate.</p>
       </div>
     </aside>
   </div>
 </div>
 
-<div class="footbar">
+<div class="foot">
   <div class="wrap">
     <div id="selected" class="selected"></div>
     <div class="row" style="display:flex; gap:8px; flex-wrap:wrap">
@@ -161,7 +231,7 @@
 </div>
 
 <script>
-/* -------------------- DATA (same options we discussed) -------------------- */
+/* ===== DATA (all options we’ve discussed) ===== */
 const DESTS = [
   {id:'hampi-deep', name:'Hampi + Anegundi/Sanapur + Sandur', state:'Karnataka', why:'Boulder valleys, ruins, river-island hush; red-ore canyon drives.', tags:['psy','culture','mountains','rivers','zero-crowd']},
   {id:'gokarna-arc', name:'Gokarna Quiet Arc + Kumta–Honnavar Coves', state:'Karnataka Coast', why:'Cliff trails to pocket beaches, bioluminescence nights (if lucky).', tags:['beach','psy','zero-crowd']},
@@ -172,7 +242,7 @@ const DESTS = [
   {id:'andaman-slow', name:'Andamans: Neil (Shaheed) + Long Island', state:'Andaman & Nicobar', why:'Forest-to-beach hikes, reef flats, plankton nights.', tags:['beach','forest','zero-crowd']},
   {id:'valparai', name:'Valparai + Sholayar', state:'TN/Kerala Border', why:'Tea highlands, rainforest gullies, lion-tailed macaques.', tags:['forest','mountains','zero-crowd']},
   {id:'dhanushkodi', name:'Dhanushkodi + Gulf of Mannar', state:'Tamil Nadu', why:'End-of-the-land sandspit, glassy lagoons, wind & kites.', tags:['beach','psy','zero-crowd']},
-  {id:'chettinad', name:'Chettinad Mansions (Karaikudi)', state:'Tamil Nadu', why:'Palatial homes, Athangudi tiles, cycle past craft clusters.', tags:['culture','zero-crowd']},
+  {id:'chettinad', name:'Chettinad Mansions (Karaikudi)', state:'Tamil Nadu', why:'Palatial homes, Athangudi tiles, craft cycles.', tags:['culture','zero-crowd']},
   {id:'valiyaparamba', name:'Valiyaparamba + Kavvayi Backwaters', state:'North Kerala', why:'Backwaters without Alleppey crowds; islands & sandbars.', tags:['rivers','beach','zero-crowd']},
   {id:'bhogwe', name:'Bhogwe–Nivati–Vengurla Arc', state:'South Maharashtra', why:'Empty coves, laterite cliffs, teal water; pre-2005 Goa vibe.', tags:['beach','zero-crowd']},
   {id:'kutch', name:'Kutch Crafts + White Rann', state:'Gujarat', why:'Salt-desert moonscapes with living craft villages.', tags:['desert','culture','zero-crowd']},
@@ -184,34 +254,32 @@ const DESTS = [
   {id:'radhanagari', name:'Radhanagari Bison Sanctuary', state:'Maharashtra', why:'Foggy grasslands, gaur herds, blue-hour plateaus.', tags:['forest','zero-crowd']},
   {id:'amboli', name:'Amboli Ghats', state:'Maharashtra', why:'Shola cloud-forest, moody winter hikes.', tags:['forest','mountains','zero-crowd']},
   {id:'phansad', name:'Phansad Wildlife Sanctuary', state:'Maharashtra', why:'Coastal forest + watchtowers; sea-breeze mornings.', tags:['forest','rivers','zero-crowd']},
-  {id:'bhimashankar', name:'Bhimashankar WLS', state:'Maharashtra', why:'Sacred groves, Malabar giant squirrels, mossy stone trails.', tags:['forest','mountains','zero-crowd']},
+  {id:'bhimashankar', name:'Bhimashankar WLS', state:'Maharashtra', why:'Sacred groves, Malabar giant squirrels, mossy trails.', tags:['forest','mountains','zero-crowd']},
   {id:'tamhini', name:'Tamhini–Mulshi Belt', state:'Maharashtra', why:'Fern gullies, mirror lakes, blue-hour photography.', tags:['forest','rivers','zero-crowd']},
   {id:'nagzira', name:'Navegaon–Nagzira TR', state:'Maharashtra', why:'Twin lakes, bamboo–sal mosaics, superb birding.', tags:['forest','rivers','zero-crowd']},
-  {id:'tipeshwar', name:'Tipeshwar WLS', state:'Maharashtra', why:'Compact teak forest with frequent big-cat sightings.', tags:['forest','psy']},
+  {id:'tipeshwar', name:'Tipeshwar WLS', state:'Maharashtra', why:'Compact teak with frequent big-cat sightings.', tags:['forest','psy']},
   {id:'umred', name:'Umred–Karhandla', state:'Maharashtra', why:'Raw teak corridors; old-school forest energy.', tags:['forest','zero-crowd']},
   {id:'melghat', name:'Melghat TR (Satpura)', state:'Maharashtra', why:'Deep valleys, sparkling night skies, tribal hamlets.', tags:['forest','mountains','zero-crowd']},
   {id:'pench-mh', name:'Pench (Sillari, MH side)', state:'Maharashtra', why:'Kipling woods; calmer gates than MP side.', tags:['forest','rivers']}
 ];
 
-/* -------------------- STATE -------------------- */
+/* ===== STATE ===== */
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
-
-const votesKey = 'tripVotes_v2';     // NEW: per-device toggle (0/1) for each destination
+const votesKey = 'tripVotes_psy_v1';
 const picksKey = 'tripPicks_v1';
-
-let votes = loadVotes();             // { id: 0|1 }
+let votes = loadVotes();          // { id: 0|1 }
 let activeTags = new Set(['mountains','beach','forest','rivers','desert','culture','psy','zero-crowd']);
 let searchQ = '';
 
-/* -------------------- RENDER -------------------- */
+/* ===== RENDER ===== */
 function render(){
   const grid = $('#grid'); grid.innerHTML = '';
   const filtered = DESTS.filter(d=>{
-    const tagsOk = d.tags.some(t=>activeTags.has(t));
     const q = searchQ.trim().toLowerCase();
     const qOk = !q || d.name.toLowerCase().includes(q) || d.state.toLowerCase().includes(q) || d.tags.join(' ').includes(q);
-    return tagsOk && qOk;
+    const tOk = d.tags.some(t=>activeTags.has(t));
+    return qOk && tOk;
   });
 
   if($('#sortVotes').dataset.sorted === 'true'){
@@ -220,52 +288,37 @@ function render(){
 
   filtered.forEach(d=>{
     const v = votes[d.id]||0;
+    const top = isTop(d.id);
     const card = document.createElement('div');
     card.className = 'card';
-    const top = isTop(d.id);
     card.innerHTML = `
+      <div class="soft-glow"></div>
       <div class="badge">${d.state}${top ? ' · <span class="crown">👑 Top</span>' : ''}</div>
       <div class="title">${d.name}</div>
       <div class="meta">${d.tags.map(t=>`<span class="tag">#${t}</span>`).join(' ')}</div>
       <p class="why">${d.why}</p>
       <div class="actions">
-        <div class="vote">
-          <button class="btn ${v? 'liked':''}" data-vote="${d.id}" aria-pressed="${!!v}">${v? '✅ Voted':'👍 Vote'}</button>
-          <span class="count" id="c_${d.id}">${v}</span>
-        </div>
-        <a class="btn ghost" target="_blank" rel="noopener" href="${googleLink(d.name)}">🔎 Google</a>
+        <button class="btn ${v? 'liked':''}" data-vote="${d.id}" aria-pressed="${!!v}">${v? '✅ Voted':'👍 Vote'}</button>
+        <span class="count" id="c_${d.id}">${v}</span>
+        <a class="btn ghost" target="_blank" rel="noopener" href="${google(d.name)}">🔎 Google</a>
         <button class="btn ghost" data-pick="${d.id}">⭐ Pin</button>
         <button class="btn ghost" data-reset="${d.id}" title="Reset this card">♻️</button>
       </div>
     `;
-    // long-press to reset (mobile friendly)
     addLongPress(card.querySelector(`[data-vote="${d.id}"]`), ()=> resetOne(d.id));
     grid.appendChild(card);
   });
 
-  updateLeaderboard();
   renderPinned();
+  updateBoard();
 }
 
-function renderPinned(){
-  const sel = $('#selected');
-  const arr = loadPicks();
-  sel.innerHTML = arr.length ? '' : '<span class="hint">Pin favourites to see them here.</span>';
-  arr.forEach(id=>{
-    const d = DESTS.find(x=>x.id===id); if(!d) return;
-    const pill = document.createElement('div');
-    pill.className = 'pill';
-    pill.innerHTML = `⭐ ${d.name} <button class="btn ghost" data-unpin="${id}">✕</button>`;
-    sel.appendChild(pill);
-  });
-}
-
-/* -------------------- HELPERS -------------------- */
-function googleLink(n){ return `https://www.google.com/search?q=${encodeURIComponent(n+' India')}`; }
+/* ===== HELPERS ===== */
+function google(n){ return `https://www.google.com/search?q=${encodeURIComponent(n+' India')}` }
 function loadVotes(){
   try{
     const qs = new URLSearchParams(location.search);
-    if(qs.get('votes')){ // import shared votes (array of [id,1] pairs or object)
+    if(qs.get('votes')){
       const imported = JSON.parse(decodeURIComponent(qs.get('votes')));
       const obj = Array.isArray(imported) ? Object.fromEntries(imported) : imported;
       localStorage.setItem(votesKey, JSON.stringify(obj));
@@ -275,39 +328,33 @@ function loadVotes(){
     return JSON.parse(localStorage.getItem(votesKey) || '{}');
   }catch(e){ return {} }
 }
-function saveVotes(){ localStorage.setItem(votesKey, JSON.stringify(votes)); }
-function total(id){ return votes[id]||0; }
-function topScore(){ return Math.max(0, ...DESTS.map(d=>total(d.id))); }
-function isTop(id){ return total(id) === topScore() && topScore() > 0; }
-function loadPicks(){ try{ return JSON.parse(localStorage.getItem(picksKey) || '[]'); }catch(e){ return [] } }
-
-/* share current votes as object */
+function saveVotes(){ localStorage.setItem(votesKey, JSON.stringify(votes)) }
+function total(id){ return votes[id]||0 }
+function topScore(){ return Math.max(0, ...DESTS.map(d=>total(d.id))) }
+function isTop(id){ return total(id) === topScore() && topScore() > 0 }
 function shareVotes(){
-  const str = encodeURIComponent(JSON.stringify(votes));
-  const url = `${location.origin}${location.pathname}?votes=${str}`;
+  const url = `${location.origin}${location.pathname}?votes=${encodeURIComponent(JSON.stringify(votes))}`;
   navigator.clipboard.writeText(url).then(()=> alert('Shareable link copied!'));
 }
 
-/* Reset helpers */
-function resetOne(id){
-  votes[id] = 0; saveVotes(); render();
+function renderPinned(){
+  const sel = $('#selected');
+  const arr = JSON.parse(localStorage.getItem(picksKey) || '[]');
+  sel.innerHTML = arr.length ? '' : '<span class="hint">Pin favourites to see them here.</span>';
+  arr.forEach(id=>{
+    const d = DESTS.find(x=>x.id===id); if(!d) return;
+    const pill = document.createElement('div'); pill.className='pill';
+    pill.innerHTML = `⭐ ${d.name} <button class="btn ghost" data-unpin="${id}">✕</button>`;
+    sel.appendChild(pill);
+  });
 }
 
-/* Long-press utility (for mobile) */
-function addLongPress(el, cb){
-  let t;
-  el.addEventListener('touchstart', ()=>{ t=setTimeout(cb,600) }, {passive:true});
-  ['touchend','touchcancel','touchmove'].forEach(ev=> el.addEventListener(ev, ()=> clearTimeout(t), {passive:true}));
-}
-
-/* Leaderboard */
-function updateLeaderboard(){
+function updateBoard(){
   const board = $('#leaderboard');
   const sorted = [...DESTS].sort((a,b)=> total(b.id) - total(a.id)).slice(0,8);
   board.innerHTML = '';
   sorted.forEach((d,i)=>{
-    const row = document.createElement('div');
-    row.className = 'row';
+    const row = document.createElement('div'); row.className='row';
     const crown = isTop(d.id) ? ' 👑' : '';
     row.innerHTML = `<span class="name">${i+1}. ${d.name}${crown}</span>
                      <span class="score">${total(d.id)}</span>`;
@@ -316,30 +363,34 @@ function updateLeaderboard(){
   if(!sorted.length) board.innerHTML = '<span class="hint">No votes yet. Tap 👍 to start.</span>';
 }
 
-/* -------------------- EVENTS -------------------- */
+function resetOne(id){ votes[id]=0; saveVotes(); render(); }
+function addLongPress(el, cb){
+  let t;
+  el.addEventListener('touchstart', ()=>{ t=setTimeout(cb,600) }, {passive:true});
+  ['touchend','touchcancel','touchmove'].forEach(ev=> el.addEventListener(ev, ()=> clearTimeout(t), {passive:true}));
+}
+
+/* ===== EVENTS ===== */
 document.addEventListener('click', (e)=>{
   const id = e.target?.dataset?.vote;
-  if(id){
-    // toggle 0/1
-    votes[id] = votes[id] ? 0 : 1;
-    saveVotes(); render();
-    return;
-  }
+  if(id){ votes[id] = votes[id] ? 0 : 1; saveVotes(); render(); return; }
+
   const pick = e.target?.dataset?.pick;
   if(pick){
-    const arr = loadPicks(); if(!arr.includes(pick)) arr.push(pick);
+    const arr = JSON.parse(localStorage.getItem(picksKey) || '[]');
+    if(!arr.includes(pick)) arr.push(pick);
     localStorage.setItem(picksKey, JSON.stringify(arr)); renderPinned(); return;
   }
   const un = e.target?.dataset?.unpin;
   if(un){
-    const arr = loadPicks().filter(x=>x!==un);
+    const arr = JSON.parse(localStorage.getItem(picksKey) || '[]').filter(x=>x!==un);
     localStorage.setItem(picksKey, JSON.stringify(arr)); renderPinned(); return;
   }
   const r = e.target?.dataset?.reset;
   if(r){ resetOne(r); return; }
 });
 
-$('#q').addEventListener('input', e=>{ searchQ = e.target.value; render(); });
+$('#q').addEventListener('input', e=>{ searchQ=e.target.value; render(); });
 $('#clear').addEventListener('click', ()=>{ $('#q').value=''; searchQ=''; render(); });
 $('#randomize').addEventListener('click', ()=>{ $('#sortVotes').dataset.sorted='false'; DESTS.sort(()=>Math.random()-.5); render(); });
 $('#sortVotes').addEventListener('click', (e)=>{
@@ -348,12 +399,10 @@ $('#sortVotes').addEventListener('click', (e)=>{
   e.target.textContent = on ? 'Sort by Votes' : 'Sorted ✓';
   render();
 });
-$('#resetVotes').addEventListener('click', ()=>{
-  if(confirm('Reset all votes on this device?')){ votes={}; saveVotes(); render(); }
-});
+$('#resetVotes').addEventListener('click', ()=>{ if(confirm('Reset all votes on this device?')){ votes={}; saveVotes(); render(); } });
 $('#share').addEventListener('click', shareVotes);
 
-/* -------------------- INIT -------------------- */
+/* ===== INIT ===== */
 render();
 </script>
 </body>
