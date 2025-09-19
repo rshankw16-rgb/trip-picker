@@ -3,38 +3,23 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🌌 Trip Picker — Hidden India</title>
-<meta name="description" content="Classy psychedelic cosmos UI for voting on offbeat India trips. Live filters, fun vote bursts, leaderboard, Google links." />
-
-<!-- Social preview (edit URL if you add cover.png) -->
-<meta property="og:title" content="Cosmic Trip Picker — Hidden India" />
-<meta property="og:description" content="Vote on unique trips. Starry UI, live leaderboard, Google links, shareable votes." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://YOUR-USERNAME.github.io/YOUR-REPO/" />
-<meta property="og:image" content="https://YOUR-USERNAME.github.io/YOUR-REPO/cover.png" />
-<meta name="twitter:card" content="summary_large_image" />
-
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2285%22>🌌</text></svg>">
+<title>🌌 Cosmic Trip Picker — Hidden India</title>
+<meta name="description" content="Mobile-first, psychedelic but classy trip picker. Animated stars, funny vote bursts, group voting without a server, share/import votes, bottom-sheet leaderboard." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2284%22>🌌</text></svg>">
 
 <style>
   :root{
-    --fg:#edf2ff; --muted:#b9c7ea; --line:#1b2342;
-    --glass:#0a0f21cc; --glass2:#0a0e1ccc; --accent:#8ef6d9; --hot:#ffd166;
-    --chip:#101734; --chipOn:#182358;
-    --card:#0c1126; --card2:#0a0f21;
+    --fg:#eaf0ff; --muted:#b7c6e9; --line:#1a2342;
+    --glass:#0a0f21cc; --glass2:#0a0e1ccc; --hot:#ffd166;
+    --card:#0b1126; --card2:#0a0f20; --btn:#0c1333; --btnb:#2a3569;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{
-    margin:0; color:var(--fg);
-    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background:#070a16; overflow-x:hidden;
-  }
+  body{margin:0; color:var(--fg); font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:#070a16; overflow-x:hidden}
 
-  /* ===== COSMOS BACKGROUND ===== */
+  /* Backdrop */
   canvas#stars, canvas#bursts { position:fixed; inset:0; z-index:-2; display:block }
-  .nebula{
-    position:fixed; inset:-25vmax; z-index:-3; filter:blur(80px) saturate(120%);
+  .nebula{ position:fixed; inset:-25vmax; z-index:-3; filter:blur(80px) saturate(120%);
     background:
       radial-gradient(60vmax 40vmax at 10% 10%, #18223d 0%, transparent 60%),
       radial-gradient(70vmax 50vmax at 85% 15%, #151f3a 0%, transparent 60%),
@@ -42,73 +27,54 @@
     opacity:.85; animation: driftNeb 40s ease-in-out infinite alternate;
   }
   @keyframes driftNeb { 0%{transform:translate3d(0,0,0)} 100%{transform:translate3d(2vmin,-2vmin,0)} }
-  @media (prefers-reduced-motion: reduce){ .nebula{animation:none} }
 
-  /* ===== LAYOUT ===== */
-  header, .foot {
-    position:sticky; inset-inline:0; backdrop-filter: blur(10px) saturate(160%);
-    background: var(--glass2); border-block:1px solid var(--line); z-index:20;
+  /* Header (compact) */
+  header{position:sticky; top:0; z-index:20; background:var(--glass2); border-bottom:1px solid var(--line); backdrop-filter:blur(10px) saturate(160%)}
+  .wrap{max-width:1100px; margin:0 auto; padding:12px 14px}
+  .toprow{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+  .brand{display:flex; align-items:center; gap:10px}
+  .brand h1{font-size:18px; margin:0; font-weight:900; letter-spacing:.2px}
+  .brand .emoji{font-size:22px}
+  .bar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px}
+  input[type="search"]{flex:1; min-width:180px; background:#0a1024; color:var(--fg); border:1px solid #23315e; padding:10px 12px; border-radius:12px}
+  .btn{background:var(--btn); color:#eaf6ff; border:1px solid var(--btnb); padding:10px 12px; border-radius:12px; cursor:pointer; font-weight:800}
+  .btn.hot{background:linear-gradient(90deg,#19d1a3,#87a9ff); color:#041515; border-color:#47e2d4}
+  .btn.ghost{background:transparent}
+  .hint{color:#9fb3eb; font-size:12px}
+
+  /* Grid */
+  main .grid{display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); padding:12px 14px 140px; max-width:1100px; margin:0 auto}
+  .card{background:linear-gradient(180deg,var(--card),var(--card2)); border:1px solid #20284d; border-radius:16px; padding:14px; position:relative; overflow:hidden; box-shadow:0 16px 36px -22px #000, 0 0 0 1px #0f1a36 inset}
+  .badge{position:absolute; top:10px; right:10px; font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid #2a376a; background:#0d1633c0; color:#b8c7ff}
+  .title{font-weight:900; font-size:18px; margin:2px 32px 6px 0}
+  .meta{color:#cfe0ff; font-size:12px; display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 8px}
+  .tag{font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid #2b3767; background:#0e1633}
+  .why{color:#e7efff; font-size:14px; margin:4px 0 12px}
+  .actions{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  .count{font-weight:900; color:var(--hot)}
+  .liked{background:linear-gradient(90deg,#1cc9a3,#80f)!important; color:#021611!important; border-color:#44e4d8!important}
+
+  /* Floating Trophy + Bottom Sheet */
+  .fab{position:fixed; right:14px; bottom:84px; z-index:25}
+  .fab button{border-radius:999px; padding:12px 14px; font-size:16px}
+  .sheet{position:fixed; left:0; right:0; bottom:-70vh; height:70vh; background:var(--glass); border-top:1px solid var(--line); backdrop-filter:blur(10px) saturate(160%); border-top-left-radius:14px; border-top-right-radius:14px; z-index:24; transition:transform .25s ease, bottom .25s ease}
+  .sheet.open{bottom:0}
+  .sheet .drag{width:44px; height:5px; background:#30406f; border-radius:999px; margin:8px auto}
+  .sheet .inside{max-width:1100px; margin:0 auto; padding:8px 14px 20px}
+  .lead-row{display:flex; justify-content:space-between; gap:8px; padding:6px 0; border-bottom:1px dashed #213056}
+  .lead-name{font-weight:800} .lead-score{font-weight:900; color:var(--hot)}
+
+  /* Footer controls (compact) */
+  footer{position:sticky; bottom:0; background:var(--glass2); border-top:1px solid var(--line); z-index:20}
+  footer .wrap{display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap}
+
+  /* Phone tweaks */
+  @media (max-width:640px){
+    .brand h1{font-size:16px}
+    .btn{padding:12px 14px}
+    .title{font-size:19px}
+    .why{font-size:15px}
   }
-  header{ top:0 } .foot{ bottom:0 }
-  .wrap{max-width:1180px; margin:0 auto; padding:14px 16px}
-  h1{margin:0 0 4px; font-weight:900; letter-spacing:.2px}
-  .sub{margin:0; color:var(--muted)}
-
-  .toolbar{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
-  .chip{
-    padding:9px 12px; border-radius:999px; background:var(--chip); color:#dbe7ff;
-    border:1px solid #263060; user-select:none; cursor:pointer; transition:.15s;
-  }
-  .chip.on{ background:var(--chipOn); border-color:#3b4b8b; box-shadow:0 0 0 1px #3b4b8b inset }
-  .chip:hover{ transform: translateY(-1px) }
-
-  .searchbar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px}
-  input[type="search"]{
-    background:#0a1024; color:var(--fg); border:1px solid #23315e;
-    padding:10px 12px; border-radius:12px; flex:1; min-width:220px
-  }
-  .btn{
-    background:#0c1333; color:#eaf6ff; border:1px solid #2a3569;
-    padding:10px 12px; border-radius:12px; cursor:pointer; transition:.15s; font-weight:800
-  }
-  .btn:hover{ transform: translateY(-1px) }
-  .btn.hot{ background:linear-gradient(90deg,#17d1a0,#87a9ff); color:#031115; border-color:#46e1d3 }
-  .btn.ghost{ background:transparent }
-  .hint{ color:#9fb3eb; font-size:12px }
-
-  .layout{ display:grid; grid-template-columns: 1fr 330px; gap:16px; }
-  @media (max-width: 980px){ .layout{ grid-template-columns: 1fr } }
-
-  .grid{ display:grid; gap:14px; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); padding:16px 0 120px; }
-
-  /* ===== CARDS ===== */
-  .card{
-    background: linear-gradient(180deg, var(--card), var(--card2));
-    border: 1px solid #20284d; border-radius: 18px; padding: 15px;
-    position:relative; overflow:hidden;
-    box-shadow: 0 16px 36px -22px #000, 0 0 0 1px #0f1a36 inset;
-  }
-  .badge{ position:absolute; top:10px; right:10px; font-size:12px; padding:4px 8px; border-radius:999px;
-          border:1px solid #2a376a; background:#0d1633bb; color:#b8c7ff }
-  .title{ font-weight:900; font-size:18px; margin:2px 32px 6px 0 }
-  .meta{ color:#cfe0ff; font-size:12px; display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 10px }
-  .tag{ font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid #2b3767; background:#0e1633 }
-  .why{ color:#e7efff; font-size:14px; margin:4px 0 12px }
-  .actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center }
-  .count{ font-weight:900; color:var(--hot) }
-  .liked{ background:linear-gradient(90deg,#1cc9a3,#80f)!important; color:#021611!important; border-color:#44e4d8!important }
-
-  aside .panel{ background: linear-gradient(180deg, #0a1126cc, #0a0f22cc);
-                border:1px solid #20284d; border-radius:14px; padding:12px; margin:8px 0 }
-  .lead .row{ display:flex; justify-content:space-between; align-items:center; gap:8px }
-  .lead .name{ font-weight:800 } .lead .score{ font-weight:900; color:#ffd166 }
-  .crown{ filter: drop-shadow(0 0 6px #ffd16688) }
-
-  .foot .wrap{ display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap }
-  .selected{ display:flex; flex-wrap:wrap; gap:6px }
-  .pill{ display:inline-flex; align-items:center; gap:6px; background:#0e1734; border:1px solid #263469; padding:6px 10px; border-radius:999px; font-size:13px }
-
-  @media (max-width:600px){ .btn{ padding:12px 14px } .chip{ padding:10px 14px } .title{ font-size:19px } .why{ font-size:15px } }
 </style>
 </head>
 <body>
@@ -118,61 +84,56 @@
 
 <header>
   <div class="wrap">
-    <h1>🌌 Cosmic Trip Picker — Hidden India</h1>
-    <p class="sub">Tap 👍 to vote (tap again to un-vote). Filters work. Each card opens Google. Funny bursts included.</p>
-
-    <div class="toolbar" id="filters">
-      <div class="chip on" data-tag="mountains">Mountains</div>
-      <div class="chip on" data-tag="beach">Beaches</div>
-      <div class="chip on" data-tag="forest">Forests</div>
-      <div class="chip on" data-tag="rivers">Rivers</div>
-      <div class="chip on" data-tag="desert">Desert</div>
-      <div class="chip on" data-tag="culture">Culture</div>
-      <div class="chip on" data-tag="psy">Trippy</div>
-      <div class="chip on" data-tag="zero-crowd">Hidden</div>
-      <div class="chip on" data-tag="all">All</div>
+    <div class="toprow">
+      <div class="brand"><span class="emoji">🪐</span><h1>Cosmic Trip Picker — Hidden India</h1></div>
+      <button id="share" class="btn hot">🔗 Share My Votes</button>
     </div>
-
-    <div class="searchbar">
+    <div class="bar">
       <input id="q" type="search" placeholder="Search destinations, states, vibes…" />
-      <button class="btn" id="clear">Clear</button>
-      <button class="btn ghost" id="randomize">🎲 Randomize</button>
-      <button class="btn hot" id="share">🔗 Share Votes</button>
-      <span class="hint">Votes are per device. “Share Votes” copies a link that imports your scores.</span>
+      <button id="clear" class="btn">Clear</button>
+      <button id="randomize" class="btn ghost">🎲 Randomize</button>
+      <button id="importBtn" class="btn">⬇️ Import Votes</button>
+      <span class="hint">Group voting: each friend shares, one person imports all.</span>
     </div>
   </div>
 </header>
 
-<div class="wrap" style="margin-top:6px">
-  <div class="layout">
-    <main>
-      <div class="grid" id="grid"></div>
-    </main>
-    <aside>
-      <div class="panel">
-        <h3 style="margin:6px 0 4px">🏆 Leaderboard</h3>
-        <div id="leaderboard" class="lead"></div>
-      </div>
-      <div class="panel">
-        <h3 style="margin:6px 0 4px">ℹ️ Tips</h3>
-        <p class="hint">Long-press 👍 to reset just that card. Use “Reset All” below for a clean slate.</p>
-      </div>
-    </aside>
+<main>
+  <div class="grid" id="grid"></div>
+</main>
+
+<!-- Floating Trophy -->
+<div class="fab"><button id="toggleSheet" class="btn">🏆 Leaderboard</button></div>
+
+<!-- Bottom Sheet Leaderboard -->
+<div id="sheet" class="sheet" aria-hidden="true">
+  <div class="drag"></div>
+  <div class="inside">
+    <h3 style="margin:4px 0 6px">Group Leaderboard</h3>
+    <div id="leaderboard"></div>
+    <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
+      <button id="sortVotes" class="btn">Sort by Votes</button>
+      <button id="resetVotes" class="btn">🗑️ Reset My Device</button>
+      <button id="resetGroup" class="btn">🗑️ Reset Group</button>
+    </div>
+    <details style="margin-top:10px">
+      <summary>How group votes work</summary>
+      <p class="hint">Each device stores its own 0/1 votes. “Share My Votes” copies a link that encodes your choices. Paste friends’ links via “Import Votes” to merge. Leaderboard shows the sum.</p>
+    </details>
   </div>
 </div>
 
-<div class="foot">
+<footer>
   <div class="wrap">
-    <div id="selected" class="selected"></div>
-    <div class="row" style="display:flex; gap:8px; flex-wrap:wrap">
-      <button class="btn" id="resetVotes">🗑️ Reset All</button>
-      <button class="btn" id="sortVotes">Sort by Votes</button>
+    <div class="hint">Tap 👍 to vote (tap again to un-vote). Long-press 👍 to reset that card.</div>
+    <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
+      <span id="groupCount" class="hint"></span>
     </div>
   </div>
-</div>
+</footer>
 
 <script>
-/* ===== DATA (all options we discussed) ===== */
+/* ---------- DATA ---------- */
 const DESTS = [
   {id:'hampi-deep', name:'Hampi + Anegundi/Sanapur + Sandur', state:'Karnataka', why:'Boulder valleys, ruins, river-island hush; red-ore canyon drives.', tags:['psy','culture','mountains','rivers','zero-crowd']},
   {id:'gokarna-arc', name:'Gokarna Quiet Arc + Kumta–Honnavar Coves', state:'Karnataka Coast', why:'Cliff trails to pocket beaches, bioluminescence nights (if lucky).', tags:['beach','psy','zero-crowd']},
@@ -189,7 +150,6 @@ const DESTS = [
   {id:'kutch', name:'Kutch Crafts + White Rann', state:'Gujarat', why:'Salt-desert moonscapes with living craft villages.', tags:['desert','culture','zero-crowd']},
   {id:'dzongu', name:'Dzongu (Lepcha Reserve)', state:'North Sikkim', why:'Sacred groves, hot springs, rivers; Lepcha culture.', tags:['mountains','forest','zero-crowd']},
 
-  /* Maharashtra forests */
   {id:'koyna', name:'Koyna–Vasota', state:'Maharashtra', why:'Boat across Koyna backwaters + jungle trek to cliff-top fort.', tags:['forest','rivers','zero-crowd']},
   {id:'chandoli', name:'Chandoli National Park', state:'Maharashtra', why:'Maratha forts swallowed by forest; gaur & civet nights.', tags:['forest','zero-crowd']},
   {id:'radhanagari', name:'Radhanagari Bison Sanctuary', state:'Maharashtra', why:'Foggy grasslands, gaur herds, blue-hour plateaus.', tags:['forest','zero-crowd']},
@@ -204,63 +164,64 @@ const DESTS = [
   {id:'pench-mh', name:'Pench (Sillari, MH side)', state:'Maharashtra', why:'Kipling woods; calmer gates than MP side.', tags:['forest','rivers']}
 ];
 
-/* ===== STATE ===== */
+/* ---------- STATE (local + group) ---------- */
 const $ = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
-const votesKey = 'tripVotes_cosmos_v1';
-const picksKey = 'tripPicks_v1';
-let votes = loadVotes(); // { id: 0|1 }
-let activeTags = new Set(['mountains','beach','forest','rivers','desert','culture','psy','zero-crowd','all']);
-let searchQ = '';
+const votesKey = 'votes_device_v3';     // 0/1 per destination on THIS device
+const groupKey = 'votes_group_v3';      // array of member vote maps merged locally
+let myVotes = loadJson(votesKey) || {};
+let groupMembers = loadJson(groupKey) || []; // [{idMap}, ...]; myVotes is implicitly included when computing totals
 
-/* ===== CANVASES (fixed) ===== */
-const starCanvas   = document.getElementById('stars');
-const starCtx      = starCanvas.getContext('2d');
-const burstsCanvas = document.getElementById('bursts');
-const burstsCtx    = burstsCanvas.getContext('2d');
+function loadJson(k){ try{return JSON.parse(localStorage.getItem(k) || 'null')}catch(e){return null} }
+function saveJson(k,v){ localStorage.setItem(k, JSON.stringify(v)) }
 
-function fit(){
-  starCanvas.width   = innerWidth;
-  starCanvas.height  = innerHeight;
-  burstsCanvas.width = innerWidth;
-  burstsCanvas.height= innerHeight;
-}
+/* ---------- CANVASES + ANIMATION ---------- */
+const starCanvas = document.getElementById('stars'), starCtx = starCanvas.getContext('2d');
+const burstsCanvas = document.getElementById('bursts'), burstsCtx = burstsCanvas.getContext('2d');
+function fit(){ starCanvas.width=innerWidth; starCanvas.height=innerHeight; burstsCanvas.width=innerWidth; burstsCanvas.height=innerHeight }
 addEventListener('resize', fit); fit();
 
-const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-/* ===== STARFIELD ===== */
-const stars = Array.from({length: prefersReduced?100:220}).map(()=>({
-  x: Math.random()*innerWidth,
-  y: Math.random()*innerHeight,
-  z: Math.random()*0.6+0.4,  // parallax
-  tw: Math.random()*0.6+0.4
-}));
+/* Stars + shooting stars */
+const stars = Array.from({length: 220}).map(()=>({ x:Math.random()*innerWidth, y:Math.random()*innerHeight, z:Math.random()*0.6+0.4, tw:Math.random()*0.6+0.4 }));
+let shooters = [];
+function maybeShoot(){
+  if(Math.random()<0.01){ // chance each frame
+    shooters.push({x:Math.random()*innerWidth*0.6, y:Math.random()*innerHeight*0.4, vx:3+Math.random()*2, vy:1+Math.random()*1.5, a:1});
+  }
+}
 function drawStars(t){
   starCtx.clearRect(0,0,starCanvas.width,starCanvas.height);
   starCtx.fillStyle='#fff';
   stars.forEach(s=>{
-    const y = (s.y + 0.03*s.z) % innerHeight; s.y = y;
+    s.y = (s.y + 0.03*s.z) % innerHeight;
     const a = 0.6 + 0.4*Math.sin((t/7000 + s.x*0.002)*s.tw);
-    starCtx.globalAlpha = a*0.8;
-    starCtx.fillRect(s.x, y, 1.2*s.z, 1.2*s.z);
+    starCtx.globalAlpha = a*0.9;
+    starCtx.fillRect(s.x, s.y, 1.2*s.z, 1.2*s.z);
   });
+  // shooters
+  maybeShoot();
+  shooters.forEach(sh=>{
+    starCtx.globalAlpha = sh.a;
+    const grad = starCtx.createLinearGradient(sh.x,sh.y, sh.x-60,sh.y-20);
+    grad.addColorStop(0,'#aef'); grad.addColorStop(1,'transparent');
+    starCtx.strokeStyle = grad; starCtx.lineWidth = 2;
+    starCtx.beginPath(); starCtx.moveTo(sh.x,sh.y); starCtx.lineTo(sh.x-60, sh.y-20); starCtx.stroke();
+    sh.x += sh.vx; sh.y += sh.vy; sh.a *= 0.97;
+  });
+  shooters = shooters.filter(s=> s.a>0.05 && s.x<innerWidth+80 && s.y<innerHeight+80);
 }
 
-/* ===== VOTE BURSTS ===== */
+/* Vote bursts */
 let particles=[];
 function burst(x,y,type='confetti',scale=1){
   const N = 24+Math.floor(Math.random()*16);
   for(let i=0;i<N;i++){
-    const ang = Math.random()*Math.PI*2;
-    const sp = (Math.random()*2+1.5)*scale;
+    const ang = Math.random()*Math.PI*2, sp=(Math.random()*2+1.5)*scale;
     if(type==='emoji'){
-      const emojis = ['✨','⭐','🌟','🪐','🌠','🌙','☄️','💫', Math.random()<0.08?'💩':'✨'];
-      particles.push({x,y,vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-1.5, g:0.05, a:1, t:'emoji', txt:emojis[Math.floor(Math.random()*emojis.length)], sz:16+Math.random()*10});
+      const emojis=['✨','⭐','🌟','🪐','🌠','🌙','☄️','💫', Math.random()<0.08?'💩':'✨'];
+      particles.push({x,y,vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-1.5, g:0.05, a:1, t:'e', txt:emojis[Math.floor(Math.random()*emojis.length)], sz:16+Math.random()*10});
     }else{
-      const hues=[170,195,260,320];
-      const h=hues[Math.floor(Math.random()*hues.length)];
-      particles.push({x,y,vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-1.2, g:0.06, a:1, t:'dot', c:`hsl(${h} 90% 70%)`, r:2+Math.random()*3});
+      const hues=[170,195,260,320]; const h=hues[Math.floor(Math.random()*hues.length)];
+      particles.push({x,y,vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-1.2, g:0.06, a:1, t:'d', c:`hsl(${h} 90% 70%)`, r:2+Math.random()*3});
     }
   }
 }
@@ -269,167 +230,147 @@ function drawBursts(){
   particles.forEach(p=>{
     p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.a*=0.985;
     burstsCtx.globalAlpha=p.a;
-    if(p.t==='dot'){
-      burstsCtx.fillStyle=p.c;
-      burstsCtx.beginPath(); burstsCtx.arc(p.x,p.y,p.r,0,Math.PI*2); burstsCtx.fill();
-    }else{
-      burstsCtx.font = `${p.sz}px system-ui, emoji`;
-      burstsCtx.fillText(p.txt,p.x,p.y);
-    }
+    if(p.t==='d'){ burstsCtx.fillStyle=p.c; burstsCtx.beginPath(); burstsCtx.arc(p.x,p.y,p.r,0,Math.PI*2); burstsCtx.fill(); }
+    else { burstsCtx.font=`${p.sz}px system-ui, emoji`; burstsCtx.fillText(p.txt,p.x,p.y); }
   });
-  particles = particles.filter(p=>p.a>0.04 && p.y<innerHeight+40 && p.x>-40 && p.x<innerWidth+40);
+  particles = particles.filter(p=>p.a>0.04 && p.y<innerHeight+60 && p.x>-60 && p.x<innerWidth+60);
 }
 
-/* ===== RENDER ===== */
+/* ---------- RENDER ---------- */
+function groupTotalFor(id){
+  let sum = myVotes[id]?1:0;
+  for(const m of groupMembers){ if(m[id]) sum += 1; }
+  return sum;
+}
+function topScore(){
+  return Math.max(0, ...DESTS.map(d=>groupTotalFor(d.id)));
+}
 function render(){
-  const grid = $('#grid'); grid.innerHTML = '';
-  const filtered = DESTS.filter(d=>{
-    const q = searchQ.trim().toLowerCase();
-    const qOk = !q || d.name.toLowerCase().includes(q) || d.state.toLowerCase().includes(q) || d.tags.join(' ').includes(q);
-    const tagOk = activeTags.has('all') ? true : d.tags.some(t=>activeTags.has(t));
-    return qOk && tagOk;
-  });
-
-  if($('#sortVotes').dataset.sorted === 'true'){
-    filtered.sort((a,b)=> (votes[b.id]||0) - (votes[a.id]||0));
-  }
-
-  filtered.forEach(d=>{
-    const v = votes[d.id]||0;
-    const top = isTop(d.id);
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="badge">${d.state}${top ? ' · <span class="crown">👑 Top</span>' : ''}</div>
+  const q = ($('#q').value||'').trim().toLowerCase();
+  const grid = $('#grid'); grid.innerHTML='';
+  const arr = DESTS
+    .filter(d => !q || d.name.toLowerCase().includes(q) || d.state.toLowerCase().includes(q) || d.tags.join(' ').includes(q))
+    .sort((a,b)=> +($('#sortVotes').dataset.sorted==='true') ? (groupTotalFor(b.id)-groupTotalFor(a.id)) : 0);
+  arr.forEach(d=>{
+    const mine = !!myVotes[d.id];
+    const total = groupTotalFor(d.id);
+    const top = total === topScore() && total>0;
+    const el = document.createElement('div');
+    el.className='card';
+    el.innerHTML=`
+      <div class="badge">${d.state}${top?' · <span class="crown">👑 Top</span>':''}</div>
       <div class="title">${d.name}</div>
       <div class="meta">${d.tags.map(t=>`<span class="tag">#${t}</span>`).join(' ')}</div>
       <p class="why">${d.why}</p>
       <div class="actions">
-        <button class="btn ${v? 'liked':''}" data-vote="${d.id}" aria-pressed="${!!v}">${v? '✅ Voted':'👍 Vote'}</button>
-        <span class="count" id="c_${d.id}">${v}</span>
+        <button class="btn ${mine?'liked':''}" data-vote="${d.id}" aria-pressed="${mine}">${mine?'✅ Voted':'👍 Vote'}</button>
+        <span class="count" id="c_${d.id}">${total}</span>
         <a class="btn ghost" target="_blank" rel="noopener" href="${google(d.name)}">🔎 Google</a>
-        <button class="btn ghost" data-pick="${d.id}">⭐ Pin</button>
         <button class="btn ghost" data-reset="${d.id}" title="Reset this card">♻️</button>
-      </div>
-    `;
-    addLongPress(card.querySelector(`[data-vote="${d.id}"]`), ()=> resetOne(d.id));
-    grid.appendChild(card);
+      </div>`;
+    // long-press reset on mobile
+    addLongPress(el.querySelector(`[data-vote="${d.id}"]`), ()=>{ delete myVotes[d.id]; saveJson(votesKey,myVotes); render(); });
+    grid.appendChild(el);
   });
-
-  renderPinned();
-  updateBoard();
+  renderLeaderboard();
+  $('#groupCount').textContent = `Group members merged: ${1 + groupMembers.length}`;
+}
+function renderLeaderboard(){
+  const container = $('#leaderboard'); container.innerHTML='';
+  const sorted = [...DESTS].sort((a,b)=>groupTotalFor(b.id)-groupTotalFor(a.id)).slice(0,12);
+  sorted.forEach((d,i)=>{
+    const row = document.createElement('div');
+    row.className='lead-row';
+    row.innerHTML = `<div class="lead-name">${i+1}. ${d.name}</div><div class="lead-score">${groupTotalFor(d.id)}</div>`;
+    container.appendChild(row);
+  });
 }
 
-/* ===== HELPERS ===== */
+/* ---------- HELPERS ---------- */
 function google(n){ return `https://www.google.com/search?q=${encodeURIComponent(n+' India')}` }
-function loadVotes(){
-  try{
-    const qs = new URLSearchParams(location.search);
-    if(qs.get('votes')){
-      const imported = JSON.parse(decodeURIComponent(qs.get('votes')));
-      const obj = Array.isArray(imported) ? Object.fromEntries(imported) : imported;
-      localStorage.setItem(votesKey, JSON.stringify(obj));
-      history.replaceState({}, '', location.pathname);
-      return obj;
-    }
-    return JSON.parse(localStorage.getItem(votesKey) || '{}');
-  }catch(e){ return {} }
-}
-function saveVotes(){ localStorage.setItem(votesKey, JSON.stringify(votes)) }
-function total(id){ return votes[id]||0 }
-function topScore(){ return Math.max(0, ...DESTS.map(d=>total(d.id))) }
-function isTop(id){ return total(id) === topScore() && topScore() > 0 }
-function shareVotes(){
-  const url = `${location.origin}${location.pathname}?votes=${encodeURIComponent(JSON.stringify(votes))}`;
-  navigator.clipboard.writeText(url).then(()=> alert('Shareable link copied!'));
-}
-function renderPinned(){
-  const sel = $('#selected');
-  const arr = JSON.parse(localStorage.getItem(picksKey) || '[]');
-  sel.innerHTML = arr.length ? '' : '<span class="hint">Pin favourites to see them here.</span>';
-  arr.forEach(id=>{
-    const d = DESTS.find(x=>x.id===id); if(!d) return;
-    const pill = document.createElement('div'); pill.className='pill';
-    pill.innerHTML = `⭐ ${d.name} <button class="btn ghost" data-unpin="${id}">✕</button>`;
-    sel.appendChild(pill);
-  });
-}
-function resetOne(id){ votes[id]=0; saveVotes(); render(); }
 function addLongPress(el, cb){
   let t; el.addEventListener('touchstart', ()=>{ t=setTimeout(cb,600) }, {passive:true});
   ['touchend','touchcancel','touchmove'].forEach(ev=> el.addEventListener(ev, ()=> clearTimeout(t), {passive:true}));
 }
 
-/* ===== EVENTS ===== */
+/* ---------- EVENTS ---------- */
 document.addEventListener('click', (e)=>{
   const id = e.target?.dataset?.vote;
   if(id){
-    votes[id] = votes[id] ? 0 : 1;
-    saveVotes(); render();
-
-    // burst animation near the button
-    const rect = e.target.getBoundingClientRect();
-    const x = rect.left + rect.width/2, y = rect.top + window.scrollY + rect.height/2;
-    const types = ['confetti','emoji']; // emoji includes stars/planets + rare 💩
-    const type = types[Math.floor(Math.random()*types.length)];
-    burst(x, y, type, votes[id]?1.1:0.7);
+    const wasOn = !!myVotes[id];
+    if(wasOn) delete myVotes[id]; else myVotes[id]=1;
+    saveJson(votesKey,myVotes);
+    // fun burst near the button
+    const r = e.target.getBoundingClientRect();
+    const x = r.left + r.width/2, y = r.top + window.scrollY + r.height/2;
+    burst(x,y, Math.random()<0.5?'confetti':'emoji', wasOn?0.7:1.1);
+    render();
     return;
   }
-  const pick = e.target?.dataset?.pick;
-  if(pick){
-    const arr = JSON.parse(localStorage.getItem(picksKey) || '[]'); if(!arr.includes(pick)) arr.push(pick);
-    localStorage.setItem(picksKey, JSON.stringify(arr)); renderPinned(); return;
-  }
-  const un = e.target?.dataset?.unpin;
-  if(un){
-    const arr = JSON.parse(localStorage.getItem(picksKey) || '[]').filter(x=>x!==un);
-    localStorage.setItem(picksKey, JSON.stringify(arr)); renderPinned(); return;
-  }
-  const r = e.target?.dataset?.reset;
-  if(r){ resetOne(r); return; }
+  const reset = e.target?.dataset?.reset;
+  if(reset){ delete myVotes[reset]; saveJson(votesKey,myVotes); render(); return; }
 });
 
-/* Filters — working */
-document.getElementById('filters').addEventListener('click', (e)=>{
-  const tag = e.target?.dataset?.tag; if(!tag) return;
-  if(tag==='all'){
-    const chip = e.target; const on = chip.classList.contains('on');
-    if(!on){ activeTags = new Set(['all']); $$('.chip').forEach(c=>c.classList.add('on')) }
-    else { activeTags.delete('all'); chip.classList.remove('on') }
-    render(); return;
-  }
-  const chip = e.target;
-  if(chip.classList.contains('on')){ chip.classList.remove('on'); activeTags.delete(tag); }
-  else { chip.classList.add('on'); activeTags.add(tag); }
-  if(activeTags.size===0){ activeTags.add('all'); $(`.chip[data-tag="all"]`).classList.add('on'); }
-  else { activeTags.delete('all'); $(`.chip[data-tag="all"]`).classList.remove('on'); }
-  render();
+$('#q').addEventListener('input', render);
+$('#clear').addEventListener('click', ()=>{ $('#q').value=''; render(); });
+$('#randomize').addEventListener('click', ()=>{
+  // shuffle DESTS order temporarily (visual)
+  DESTS.sort(()=>Math.random()-.5); render();
 });
 
-$('#q').addEventListener('input', e=>{ searchQ=e.target.value; render(); });
-$('#clear').addEventListener('click', ()=>{ $('#q').value=''; searchQ=''; render(); });
-$('#randomize').addEventListener('click', ()=>{ $('#sortVotes').dataset.sorted='false'; DESTS.sort(()=>Math.random()-.5); render(); });
+$('#share').addEventListener('click', ()=>{
+  // share MY votes as a compact object {id:1,...}
+  const url = `${location.origin}${location.pathname}?votes=${encodeURIComponent(JSON.stringify(myVotes))}`;
+  navigator.clipboard.writeText(url).then(()=> alert('Copied your votes link! Paste this in the group.'));
+});
+
+$('#importBtn').addEventListener('click', ()=>{
+  const link = prompt('Paste a friend’s votes link (the one they got from “Share My Votes”).');
+  if(!link) return;
+  try{
+    const u = new URL(link);
+    const raw = u.searchParams.get('votes'); if(!raw) return alert('No votes found in that link.');
+    const obj = JSON.parse(decodeURIComponent(raw));
+    // avoid duplicates: if same exact map already imported, skip
+    const already = groupMembers.some(m => JSON.stringify(m)===JSON.stringify(obj));
+    if(!already){ groupMembers.push(obj); saveJson(groupKey, groupMembers); }
+    render();
+  }catch(err){ alert('Could not import. Make sure you pasted the exact link.'); }
+});
+
+$('#resetVotes').addEventListener('click', ()=>{
+  if(confirm('Reset ONLY this device’s votes?')){ myVotes={}; saveJson(votesKey,myVotes); render(); }
+});
+$('#resetGroup').addEventListener('click', ()=>{
+  if(confirm('Remove all imported friends and keep only this device?')){ groupMembers=[]; saveJson(groupKey, groupMembers); render(); }
+});
+
 $('#sortVotes').addEventListener('click', (e)=>{
   const on = e.target.dataset.sorted === 'true';
   e.target.dataset.sorted = on ? 'false' : 'true';
   e.target.textContent = on ? 'Sort by Votes' : 'Sorted ✓';
   render();
 });
-$('#resetVotes').addEventListener('click', ()=>{ if(confirm('Reset all votes on this device?')){ votes={}; saveVotes(); render(); } });
-$('#share').addEventListener('click', shareVotes);
 
-/* ===== RAF LOOPS ===== */
-let last=0;
-function loop(ts){
-  if(!last) last=ts;
-  drawStars(ts);
-  drawBursts();
-  requestAnimationFrame(loop);
-}
-if(!prefersReduced) requestAnimationFrame(loop);
-else drawStars(0); // static stars if reduced motion
+/* Bottom sheet toggle */
+const sheet = $('#sheet'), toggle = $('#toggleSheet');
+toggle.addEventListener('click', ()=> sheet.classList.toggle('open'));
 
-/* ===== INIT ===== */
+/* ---------- LOOPS ---------- */
+function loop(ts){ drawStars(ts); drawBursts(); requestAnimationFrame(loop); }
+requestAnimationFrame(loop);
+
+/* ---------- INIT ---------- */
+(function initImportFromURL(){
+  // If the page itself was opened with ?votes=..., import ONCE as a friend's map
+  const qs = new URLSearchParams(location.search);
+  if(qs.get('votes')){
+    const obj = JSON.parse(decodeURIComponent(qs.get('votes')));
+    const same = groupMembers.some(m => JSON.stringify(m)===JSON.stringify(obj));
+    if(!same){ groupMembers.push(obj); saveJson(groupKey, groupMembers); }
+    history.replaceState({}, '', location.pathname); // clean URL
+  }
+})();
 render();
 </script>
 </body>
