@@ -3,22 +3,31 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🌌 Trip Picker — Hidden India</title>
-<meta name="description" content="Mobile-first, psychedelic but classy trip picker. Animated stars, funny vote bursts, group voting without a server, share/import votes, bottom-sheet leaderboard." />
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2284%22>🌌</text></svg>">
+<title>🪐 ARMAJ Trip Picker</title>
+<meta name="description" content="Mobile-first, classy-psychedelic trip picker. Animated cosmos, front-layer vote bursts, group voting, bottom-sheet leaderboard." />
+
+<!-- Social preview -->
+<meta property="og:title" content="ARMAJ Trip Picker" />
+<meta property="og:description" content="Vote on hidden India trips. Starry UI, funny vote bursts, share/import votes, live leaderboard." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://YOUR-USERNAME.github.io/YOUR-REPO/" />
+<meta property="og:image" content="https://YOUR-USERNAME.github.io/YOUR-REPO/cover.png" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2284%22>🪐</text></svg>">
 
 <style>
   :root{
     --fg:#eaf0ff; --muted:#b7c6e9; --line:#1a2342;
     --glass:#0a0f21cc; --glass2:#0a0e1ccc; --hot:#ffd166;
     --card:#0b1126; --card2:#0a0f20; --btn:#0c1333; --btnb:#2a3569;
+    --cosmicPurple1:#7b5cff; --cosmicPurple2:#a78bfa; /* for FAB */
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{margin:0; color:var(--fg); font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:#070a16; overflow-x:hidden}
 
-  /* Backdrop */
-  canvas#stars, canvas#bursts { position:fixed; inset:0; z-index:-2; display:block }
+  /* Backdrop layers */
   .nebula{ position:fixed; inset:-25vmax; z-index:-3; filter:blur(80px) saturate(120%);
     background:
       radial-gradient(60vmax 40vmax at 10% 10%, #18223d 0%, transparent 60%),
@@ -27,6 +36,15 @@
     opacity:.85; animation: driftNeb 40s ease-in-out infinite alternate;
   }
   @keyframes driftNeb { 0%{transform:translate3d(0,0,0)} 100%{transform:translate3d(2vmin,-2vmin,0)} }
+
+  /* Stars behind content */
+  canvas#stars{ position:fixed; inset:0; z-index:-2; display:block; }
+
+  /* Vote bursts ABOVE content (3D-ish) */
+  canvas#bursts{
+    position:fixed; inset:0; z-index:22; /* header 20, sheet 24, fab 25 */
+    display:block; pointer-events:none; mix-blend-mode:screen;
+  }
 
   /* Header (compact) */
   header{position:sticky; top:0; z-index:20; background:var(--glass2); border-bottom:1px solid var(--line); backdrop-filter:blur(10px) saturate(160%)}
@@ -44,27 +62,42 @@
 
   /* Grid */
   main .grid{display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); padding:12px 14px 140px; max-width:1100px; margin:0 auto}
-  .card{background:linear-gradient(180deg,var(--card),var(--card2)); border:1px solid #20284d; border-radius:16px; padding:14px; position:relative; overflow:hidden; box-shadow:0 16px 36px -22px #000, 0 0 0 1px #0f1a36 inset}
-  .badge{position:absolute; top:10px; right:10px; font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid #2a376a; background:#0d1633c0; color:#b8c7ff}
+
+  /* TRANSLUCENT GLASS CARDS */
+  .card{
+    background: linear-gradient(180deg, rgba(11,17,38,.55), rgba(10,15,32,.45));
+    border: 1px solid rgba(32,40,77,.65);
+    border-radius: 16px; padding:14px; position:relative; overflow:hidden;
+    box-shadow: 0 16px 36px -22px #000, 0 0 0 1px rgba(15,26,54,.55) inset;
+    backdrop-filter: blur(6px) saturate(120%);
+  }
+  .badge{position:absolute; top:10px; right:10px; font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid #2a376a; background:#0d1633b0; color:#b8c7ff}
   .title{font-weight:900; font-size:18px; margin:2px 32px 6px 0}
   .meta{color:#cfe0ff; font-size:12px; display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 8px}
-  .tag{font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid #2b3767; background:#0e1633}
+  .tag{font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid #2b3767; background:#0e1633aa}
   .why{color:#e7efff; font-size:14px; margin:4px 0 12px}
   .actions{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
   .count{font-weight:900; color:var(--hot)}
   .liked{background:linear-gradient(90deg,#1cc9a3,#80f)!important; color:#021611!important; border-color:#44e4d8!important}
 
-  /* Floating Trophy + Bottom Sheet */
+  /* Floating Trophy — COSMIC PURPLE */
   .fab{position:fixed; right:14px; bottom:84px; z-index:25}
-  .fab button{border-radius:999px; padding:12px 14px; font-size:16px}
-  .sheet{position:fixed; left:0; right:0; bottom:-70vh; height:70vh; background:var(--glass); border-top:1px solid var(--line); backdrop-filter:blur(10px) saturate(160%); border-top-left-radius:14px; border-top-right-radius:14px; z-index:24; transition:transform .25s ease, bottom .25s ease}
+  .fab button{
+    border-radius:999px; padding:12px 16px; font-size:16px;
+    background: linear-gradient(135deg, var(--cosmicPurple1), var(--cosmicPurple2));
+    border: none; color:#0b0b16; font-weight:900;
+    box-shadow: 0 6px 22px -6px rgba(123,92,255,.8), 0 0 0 1px rgba(167,139,250,.4) inset;
+  }
+
+  /* Bottom Sheet Leaderboard */
+  .sheet{position:fixed; left:0; right:0; bottom:-70vh; height:70vh; background:var(--glass); border-top:1px solid var(--line); backdrop-filter:blur(10px) saturate(160%); border-top-left-radius:14px; border-top-right-radius:14px; z-index:24; transition:bottom .25s ease}
   .sheet.open{bottom:0}
   .sheet .drag{width:44px; height:5px; background:#30406f; border-radius:999px; margin:8px auto}
   .sheet .inside{max-width:1100px; margin:0 auto; padding:8px 14px 20px}
   .lead-row{display:flex; justify-content:space-between; gap:8px; padding:6px 0; border-bottom:1px dashed #213056}
   .lead-name{font-weight:800} .lead-score{font-weight:900; color:var(--hot)}
 
-  /* Footer controls (compact) */
+  /* Footer */
   footer{position:sticky; bottom:0; background:var(--glass2); border-top:1px solid var(--line); z-index:20}
   footer .wrap{display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap}
 
@@ -80,12 +113,13 @@
 <body>
 <div class="nebula" aria-hidden="true"></div>
 <canvas id="stars" aria-hidden="true"></canvas>
+<!-- bursts now ABOVE content -->
 <canvas id="bursts" aria-hidden="true"></canvas>
 
 <header>
   <div class="wrap">
     <div class="toprow">
-      <div class="brand"><span class="emoji">🪐</span><h1>Cosmic Trip Picker — Hidden India</h1></div>
+      <div class="brand"><span class="emoji">🪐</span><h1>ARMAJ Trip Picker</h1></div>
       <button id="share" class="btn hot">🔗 Share My Votes</button>
     </div>
     <div class="bar">
@@ -93,7 +127,7 @@
       <button id="clear" class="btn">Clear</button>
       <button id="randomize" class="btn ghost">🎲 Randomize</button>
       <button id="importBtn" class="btn">⬇️ Import Votes</button>
-      <span class="hint">Group voting: each friend shares, one person imports all.</span>
+      <span class="hint">Group voting: each friend shares; one person imports all.</span>
     </div>
   </div>
 </header>
@@ -103,7 +137,7 @@
 </main>
 
 <!-- Floating Trophy -->
-<div class="fab"><button id="toggleSheet" class="btn">🏆 Leaderboard</button></div>
+<div class="fab"><button id="toggleSheet">🏆 Leaderboard</button></div>
 
 <!-- Bottom Sheet Leaderboard -->
 <div id="sheet" class="sheet" aria-hidden="true">
@@ -118,7 +152,7 @@
     </div>
     <details style="margin-top:10px">
       <summary>How group votes work</summary>
-      <p class="hint">Each device stores its own 0/1 votes. “Share My Votes” copies a link that encodes your choices. Paste friends’ links via “Import Votes” to merge. Leaderboard shows the sum.</p>
+      <p class="hint">Each device stores its own 0/1 votes. “Share My Votes” copies a link with your choices. Paste friends’ links via “Import Votes” to merge. Leaderboard shows the sum.</p>
     </details>
   </div>
 </div>
@@ -164,17 +198,16 @@ const DESTS = [
   {id:'pench-mh', name:'Pench (Sillari, MH side)', state:'Maharashtra', why:'Kipling woods; calmer gates than MP side.', tags:['forest','rivers']}
 ];
 
-/* ---------- STATE (local + group) ---------- */
+/* ---------- STATE ---------- */
 const $ = s => document.querySelector(s);
-const votesKey = 'votes_device_v3';     // 0/1 per destination on THIS device
-const groupKey = 'votes_group_v3';      // array of member vote maps merged locally
+const votesKey = 'votes_device_v3';
+const groupKey = 'votes_group_v3';
 let myVotes = loadJson(votesKey) || {};
-let groupMembers = loadJson(groupKey) || []; // [{idMap}, ...]; myVotes is implicitly included when computing totals
-
-function loadJson(k){ try{return JSON.parse(localStorage.getItem(k) || 'null')}catch(e){return null} }
+let groupMembers = loadJson(groupKey) || [];
+function loadJson(k){ try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null} }
 function saveJson(k,v){ localStorage.setItem(k, JSON.stringify(v)) }
 
-/* ---------- CANVASES + ANIMATION ---------- */
+/* ---------- CANVASES + ANIM ---------- */
 const starCanvas = document.getElementById('stars'), starCtx = starCanvas.getContext('2d');
 const burstsCanvas = document.getElementById('bursts'), burstsCtx = burstsCanvas.getContext('2d');
 function fit(){ starCanvas.width=innerWidth; starCanvas.height=innerHeight; burstsCanvas.width=innerWidth; burstsCanvas.height=innerHeight }
@@ -183,11 +216,7 @@ addEventListener('resize', fit); fit();
 /* Stars + shooting stars */
 const stars = Array.from({length: 220}).map(()=>({ x:Math.random()*innerWidth, y:Math.random()*innerHeight, z:Math.random()*0.6+0.4, tw:Math.random()*0.6+0.4 }));
 let shooters = [];
-function maybeShoot(){
-  if(Math.random()<0.01){ // chance each frame
-    shooters.push({x:Math.random()*innerWidth*0.6, y:Math.random()*innerHeight*0.4, vx:3+Math.random()*2, vy:1+Math.random()*1.5, a:1});
-  }
-}
+function maybeShoot(){ if(Math.random()<0.01){ shooters.push({x:Math.random()*innerWidth*0.6, y:Math.random()*innerHeight*0.4, vx:3+Math.random()*2, vy:1+Math.random()*1.5, a:1}); } }
 function drawStars(t){
   starCtx.clearRect(0,0,starCanvas.width,starCanvas.height);
   starCtx.fillStyle='#fff';
@@ -197,7 +226,6 @@ function drawStars(t){
     starCtx.globalAlpha = a*0.9;
     starCtx.fillRect(s.x, s.y, 1.2*s.z, 1.2*s.z);
   });
-  // shooters
   maybeShoot();
   shooters.forEach(sh=>{
     starCtx.globalAlpha = sh.a;
@@ -210,7 +238,8 @@ function drawStars(t){
   shooters = shooters.filter(s=> s.a>0.05 && s.x<innerWidth+80 && s.y<innerHeight+80);
 }
 
-/* Vote bursts */
+/* Vote bursts (front canvas, glowing) */
+burstsCtx.globalCompositeOperation = 'lighter';
 let particles=[];
 function burst(x,y,type='confetti',scale=1){
   const N = 24+Math.floor(Math.random()*16);
@@ -236,21 +265,17 @@ function drawBursts(){
   particles = particles.filter(p=>p.a>0.04 && p.y<innerHeight+60 && p.x>-60 && p.x<innerWidth+60);
 }
 
-/* ---------- RENDER ---------- */
-function groupTotalFor(id){
-  let sum = myVotes[id]?1:0;
-  for(const m of groupMembers){ if(m[id]) sum += 1; }
-  return sum;
-}
-function topScore(){
-  return Math.max(0, ...DESTS.map(d=>groupTotalFor(d.id)));
-}
+/* ---------- GROUP & RENDER ---------- */
+function groupTotalFor(id){ let sum = myVotes[id]?1:0; for(const m of groupMembers){ if(m[id]) sum += 1; } return sum; }
+function topScore(){ return Math.max(0, ...DESTS.map(d=>groupTotalFor(d.id))); }
+
 function render(){
   const q = ($('#q').value||'').trim().toLowerCase();
   const grid = $('#grid'); grid.innerHTML='';
   const arr = DESTS
     .filter(d => !q || d.name.toLowerCase().includes(q) || d.state.toLowerCase().includes(q) || d.tags.join(' ').includes(q))
     .sort((a,b)=> +($('#sortVotes').dataset.sorted==='true') ? (groupTotalFor(b.id)-groupTotalFor(a.id)) : 0);
+
   arr.forEach(d=>{
     const mine = !!myVotes[d.id];
     const total = groupTotalFor(d.id);
@@ -268,13 +293,14 @@ function render(){
         <a class="btn ghost" target="_blank" rel="noopener" href="${google(d.name)}">🔎 Google</a>
         <button class="btn ghost" data-reset="${d.id}" title="Reset this card">♻️</button>
       </div>`;
-    // long-press reset on mobile
     addLongPress(el.querySelector(`[data-vote="${d.id}"]`), ()=>{ delete myVotes[d.id]; saveJson(votesKey,myVotes); render(); });
     grid.appendChild(el);
   });
+
   renderLeaderboard();
   $('#groupCount').textContent = `Group members merged: ${1 + groupMembers.length}`;
 }
+
 function renderLeaderboard(){
   const container = $('#leaderboard'); container.innerHTML='';
   const sorted = [...DESTS].sort((a,b)=>groupTotalFor(b.id)-groupTotalFor(a.id)).slice(0,12);
@@ -286,26 +312,20 @@ function renderLeaderboard(){
   });
 }
 
-/* ---------- HELPERS ---------- */
+/* ---------- HELPERS & EVENTS ---------- */
 function google(n){ return `https://www.google.com/search?q=${encodeURIComponent(n+' India')}` }
-function addLongPress(el, cb){
-  let t; el.addEventListener('touchstart', ()=>{ t=setTimeout(cb,600) }, {passive:true});
-  ['touchend','touchcancel','touchmove'].forEach(ev=> el.addEventListener(ev, ()=> clearTimeout(t), {passive:true}));
-}
+function addLongPress(el, cb){ let t; el.addEventListener('touchstart', ()=>{ t=setTimeout(cb,600) }, {passive:true}); ['touchend','touchcancel','touchmove'].forEach(ev=> el.addEventListener(ev, ()=> clearTimeout(t), {passive:true})); }
 
-/* ---------- EVENTS ---------- */
 document.addEventListener('click', (e)=>{
   const id = e.target?.dataset?.vote;
   if(id){
     const wasOn = !!myVotes[id];
     if(wasOn) delete myVotes[id]; else myVotes[id]=1;
     saveJson(votesKey,myVotes);
-    // fun burst near the button
     const r = e.target.getBoundingClientRect();
     const x = r.left + r.width/2, y = r.top + window.scrollY + r.height/2;
     burst(x,y, Math.random()<0.5?'confetti':'emoji', wasOn?0.7:1.1);
-    render();
-    return;
+    render(); return;
   }
   const reset = e.target?.dataset?.reset;
   if(reset){ delete myVotes[reset]; saveJson(votesKey,myVotes); render(); return; }
@@ -313,37 +333,28 @@ document.addEventListener('click', (e)=>{
 
 $('#q').addEventListener('input', render);
 $('#clear').addEventListener('click', ()=>{ $('#q').value=''; render(); });
-$('#randomize').addEventListener('click', ()=>{
-  // shuffle DESTS order temporarily (visual)
-  DESTS.sort(()=>Math.random()-.5); render();
-});
+$('#randomize').addEventListener('click', ()=>{ DESTS.sort(()=>Math.random()-.5); render(); });
 
 $('#share').addEventListener('click', ()=>{
-  // share MY votes as a compact object {id:1,...}
   const url = `${location.origin}${location.pathname}?votes=${encodeURIComponent(JSON.stringify(myVotes))}`;
   navigator.clipboard.writeText(url).then(()=> alert('Copied your votes link! Paste this in the group.'));
 });
 
 $('#importBtn').addEventListener('click', ()=>{
-  const link = prompt('Paste a friend’s votes link (the one they got from “Share My Votes”).');
+  const link = prompt('Paste a friend’s votes link (from “Share My Votes”).');
   if(!link) return;
   try{
     const u = new URL(link);
     const raw = u.searchParams.get('votes'); if(!raw) return alert('No votes found in that link.');
     const obj = JSON.parse(decodeURIComponent(raw));
-    // avoid duplicates: if same exact map already imported, skip
     const already = groupMembers.some(m => JSON.stringify(m)===JSON.stringify(obj));
     if(!already){ groupMembers.push(obj); saveJson(groupKey, groupMembers); }
     render();
   }catch(err){ alert('Could not import. Make sure you pasted the exact link.'); }
 });
 
-$('#resetVotes').addEventListener('click', ()=>{
-  if(confirm('Reset ONLY this device’s votes?')){ myVotes={}; saveJson(votesKey,myVotes); render(); }
-});
-$('#resetGroup').addEventListener('click', ()=>{
-  if(confirm('Remove all imported friends and keep only this device?')){ groupMembers=[]; saveJson(groupKey, groupMembers); render(); }
-});
+$('#resetVotes').addEventListener('click', ()=>{ if(confirm('Reset ONLY this device’s votes?')){ myVotes={}; saveJson(votesKey,myVotes); render(); } });
+$('#resetGroup').addEventListener('click', ()=>{ if(confirm('Remove all imported friends and keep only this device?')){ groupMembers=[]; saveJson(groupKey, groupMembers); render(); } });
 
 $('#sortVotes').addEventListener('click', (e)=>{
   const on = e.target.dataset.sorted === 'true';
@@ -356,19 +367,18 @@ $('#sortVotes').addEventListener('click', (e)=>{
 const sheet = $('#sheet'), toggle = $('#toggleSheet');
 toggle.addEventListener('click', ()=> sheet.classList.toggle('open'));
 
-/* ---------- LOOPS ---------- */
+/* Loops */
 function loop(ts){ drawStars(ts); drawBursts(); requestAnimationFrame(loop); }
 requestAnimationFrame(loop);
 
-/* ---------- INIT ---------- */
+/* One-time import via URL */
 (function initImportFromURL(){
-  // If the page itself was opened with ?votes=..., import ONCE as a friend's map
   const qs = new URLSearchParams(location.search);
   if(qs.get('votes')){
     const obj = JSON.parse(decodeURIComponent(qs.get('votes')));
     const same = groupMembers.some(m => JSON.stringify(m)===JSON.stringify(obj));
     if(!same){ groupMembers.push(obj); saveJson(groupKey, groupMembers); }
-    history.replaceState({}, '', location.pathname); // clean URL
+    history.replaceState({}, '', location.pathname);
   }
 })();
 render();
