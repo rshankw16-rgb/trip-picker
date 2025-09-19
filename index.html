@@ -2,98 +2,55 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>🌿 Trip Picker — Hidden India</title>
-<meta name="description" content="Animated, classy, psychedelic picker for offbeat India trips. Vote, share, and explore." />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>🌌 Cosmic Trip Picker — Hidden India</title>
+<meta name="description" content="Classy psychedelic cosmos UI for voting on offbeat India trips. Live filters, funny vote bursts, leaderboard, Google links." />
 
-<!-- Social preview (edit domain if you add a cover.png) -->
-<meta property="og:title" content="Psychedelic Trip Picker — Hidden India" />
-<meta property="og:description" content="Vote on wild, offbeat destinations. Live leaderboard + Google links." />
+<!-- Social preview (edit these once you host a cover.png) -->
+<meta property="og:title" content="Cosmic Trip Picker — Hidden India" />
+<meta property="og:description" content="Vote on unique trips. Starry UI, live leaderboard, Google links, shareable votes." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://YOUR-USERNAME.github.io/YOUR-REPO/" />
 <meta property="og:image" content="https://YOUR-USERNAME.github.io/YOUR-REPO/cover.png" />
 <meta name="twitter:card" content="summary_large_image" />
 
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2288%22>🌿</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2285%22>🌌</text></svg>">
 
 <style>
   :root{
-    --fg:#edf3ff; --muted:#b8c7ef; --line:#1f294a;
-    --glass:#0b1226aa; --glass2:#0b1120cc; --glow:#83ffd555;
-    --card:#0b1226; --card2:#0a0f20;
+    --fg:#edf2ff; --muted:#b9c7ea; --line:#1b2342;
+    --glass:#0a0f21cc; --glass2:#0a0e1ccc; --accent:#8ef6d9; --hot:#ffd166;
+    --chip:#101734; --chipOn:#182358;
+    --card:#0c1126; --card2:#0a0f21;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
     margin:0; color:var(--fg);
     font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    background:#070912;
+    background:#070a16;
     overflow-x:hidden;
   }
 
-  /* ===== BACKGROUND ANIMATION (visible & obvious) ===== */
-  .bg {
-    position:fixed; inset:-30vmax; z-index:-3; filter:blur(80px) saturate(120%);
-    /* animated hue rotates conic + radial gradients */
+  /* ===== COSMOS BACKGROUND ===== */
+  canvas#stars, canvas#bursts { position:fixed; inset:0; z-index:-2; display:block }
+  /* soft nebula behind the stars */
+  .nebula{
+    position:fixed; inset:-25vmax; z-index:-3; filter:blur(80px) saturate(120%);
     background:
-      conic-gradient(from calc(var(--h,0deg)) at 50% 50%,
-        hsl(calc(var(--hh,160)) 90% 55%) 0%,
-        hsl(calc(var(--hh,200)) 90% 55%) 20%,
-        hsl(calc(var(--hh,280)) 90% 55%) 40%,
-        hsl(calc(var(--hh,330)) 90% 60%) 60%,
-        hsl(calc(var(--hh,200)) 90% 55%) 80%,
-        hsl(calc(var(--hh,160)) 90% 55%) 100%)
-      ,radial-gradient(1200px 800px at 20% -10%, #1b365d 0%, transparent 60%)
-      ,radial-gradient(900px 700px at 120% 10%, #0e274f 0%, transparent 60%);
-    opacity:.8;
-    animation: hue 36s linear infinite;
+      radial-gradient(60vmax 40vmax at 10% 10%, #18223d 0%, transparent 60%),
+      radial-gradient(70vmax 50vmax at 85% 15%, #151f3a 0%, transparent 60%),
+      radial-gradient(90vmax 60vmax at 40% 90%, #1a2448 0%, transparent 70%);
+    opacity:.85; animation: driftNeb 40s ease-in-out infinite alternate;
   }
-  @keyframes hue {
-    0%   { --h:0deg;   --hh:160 }
-    50%  { --h:180deg; --hh:260 }
-    100% { --h:360deg; --hh:160 }
+  @keyframes driftNeb {
+    0% { transform: translate3d(0,0,0) }
+    100% { transform: translate3d(2vmin,-2vmin,0) }
   }
 
-  /* Drifting organic blobs */
-  .blob {
-    position:fixed; width:55vmin; aspect-ratio:1; border-radius:60%;
-    background: radial-gradient(circle at 30% 30%, #9fffe6 0%, #6cd4ff 40%, transparent 70%);
-    mix-blend-mode: screen; filter: blur(28px) saturate(120%);
-    opacity:.24; z-index:-2;
-    animation: drift 22s ease-in-out infinite;
-  }
-  .blob.b2{
-    width:70vmin; left:10%; top:60%;
-    background: radial-gradient(circle at 60% 40%, #ff76d4 0%, #a46bff 40%, transparent 70%);
-    animation-duration: 28s; animation-delay:-5s;
-  }
-  .blob.b3{
-    width:50vmin; right:5%; top:15%;
-    background: radial-gradient(circle at 40% 60%, #ffe66d 0%, #80ffea 35%, transparent 70%);
-    animation-duration: 32s; animation-delay:-10s;
-  }
-  @keyframes drift {
-    0%   { transform: translate(0,0) rotate(0deg) }
-    50%  { transform: translate(10vmin,-6vmin) rotate(120deg) }
-    100% { transform: translate(0,0) rotate(360deg) }
-  }
-
-  /* Fine grain for classy texture */
-  .grain {
-    position:fixed; inset:0; z-index:-1; pointer-events:none; opacity:.08;
-    background-image: url('data:image/svg+xml;utf8,\
-      <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160">\
-      <filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter>\
-      <rect width="100%" height="100%" filter="url(%23n)" opacity="0.25"/></svg>');
-    background-size: 240px 240px;
-    mix-blend-mode: soft-light;
-    animation: grain 1.5s steps(2) infinite;
-  }
-  @keyframes grain { to { transform: translate3d(-1%,1%,0) } }
-
-  /* Respect users who prefer less motion */
+  /* Respect reduced motion */
   @media (prefers-reduced-motion: reduce){
-    .bg, .blob, .grain { animation:none }
+    .nebula{ animation:none }
   }
 
   /* ===== LAYOUT ===== */
@@ -105,25 +62,26 @@
   .wrap{max-width:1180px; margin:0 auto; padding:14px 16px}
   h1{margin:0 0 4px; font-weight:900; letter-spacing:.2px}
   .sub{margin:0; color:var(--muted)}
+
   .toolbar{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
   .chip{
-    padding:9px 12px; border-radius:999px; background:#121a3a; color:#dce8ff;
-    border:1px solid #273364; user-select:none; cursor:pointer; transition:.15s;
+    padding:9px 12px; border-radius:999px; background:var(--chip); color:#dbe7ff;
+    border:1px solid #263060; user-select:none; cursor:pointer; transition:.15s;
   }
-  .chip.on{ background:#1a2350; border-color:#3d4b8f; box-shadow:0 0 0 1px #3d4b8f inset }
+  .chip.on{ background:var(--chipOn); border-color:#3b4b8b; box-shadow:0 0 0 1px #3b4b8b inset }
   .chip:hover{ transform: translateY(-1px) }
 
   .searchbar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:10px}
   input[type="search"]{
-    background:#0b1226; color:var(--fg); border:1px solid #23315e;
+    background:#0a1024; color:var(--fg); border:1px solid #23315e;
     padding:10px 12px; border-radius:12px; flex:1; min-width:220px
   }
   .btn{
-    background:#0e1533; color:#eaf6ff; border:1px solid #2a3569;
+    background:#0c1333; color:#eaf6ff; border:1px solid #2a3569;
     padding:10px 12px; border-radius:12px; cursor:pointer; transition:.15s; font-weight:800
   }
   .btn:hover{ transform: translateY(-1px) }
-  .btn.hot{ background:linear-gradient(90deg,#17d1a0,#87a9ff); color:#021013; border-color:#46e1d3 }
+  .btn.hot{ background:linear-gradient(90deg,#17d1a0,#87a9ff); color:#031115; border-color:#46e1d3 }
   .btn.ghost{ background:transparent }
   .hint{ color:#9fb3eb; font-size:12px }
 
@@ -139,26 +97,20 @@
     position:relative; overflow:hidden;
     box-shadow: 0 16px 36px -22px #000, 0 0 0 1px #0f1a36 inset;
   }
-  .badge{
-    position:absolute; top:10px; right:10px; font-size:12px; padding:4px 8px; border-radius:999px;
-    border:1px solid #2a376a; background:#0d1633bb; color:#b8c7ff
-  }
+  .badge{ position:absolute; top:10px; right:10px; font-size:12px; padding:4px 8px; border-radius:999px;
+          border:1px solid #2a376a; background:#0d1633bb; color:#b8c7ff }
   .title{ font-weight:900; font-size:18px; margin:2px 32px 6px 0 }
   .meta{ color:#cfe0ff; font-size:12px; display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 10px }
   .tag{ font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid #2b3767; background:#0e1633 }
   .why{ color:#e7efff; font-size:14px; margin:4px 0 12px }
   .actions{ display:flex; gap:8px; flex-wrap:wrap; align-items:center }
-  .count{ font-weight:900; color:#ffd166 }
+  .count{ font-weight:900; color:var(--hot) }
   .liked{ background:linear-gradient(90deg,#1cc9a3,#80f)!important; color:#021611!important; border-color:#44e4d8!important }
-  .soft-glow{ position:absolute; inset:-40%; background:radial-gradient(60% 60% at 30% 20%, #7df6d4 0%, transparent 60%); opacity:.06; pointer-events:none }
 
-  aside .panel{
-    background: linear-gradient(180deg, #0a1126cc, #0a0f22cc);
-    border:1px solid #20284d; border-radius:14px; padding:12px; margin:8px 0
-  }
+  aside .panel{ background: linear-gradient(180deg, #0a1126cc, #0a0f22cc);
+                border:1px solid #20284d; border-radius:14px; padding:12px; margin:8px 0 }
   .lead .row{ display:flex; justify-content:space-between; align-items:center; gap:8px }
-  .lead .name{ font-weight:800 }
-  .lead .score{ font-weight:900; color:#ffd166 }
+  .lead .name{ font-weight:800 } .lead .score{ font-weight:900; color:#ffd166 }
   .crown{ filter: drop-shadow(0 0 6px #ffd16688) }
 
   .foot .wrap{ display:flex; justify-content:space-between; gap:10px; align-items:center; flex-wrap:wrap }
@@ -170,16 +122,14 @@
 </style>
 </head>
 <body>
-<div class="bg" aria-hidden="true"></div>
-<div class="blob b1" style="left:65%; top:70%"></div>
-<div class="blob b2"></div>
-<div class="blob b3"></div>
-<div class="grain" aria-hidden="true"></div>
+<div class="nebula" aria-hidden="true"></div>
+<canvas id="stars" aria-hidden="true"></canvas>
+<canvas id="bursts" aria-hidden="true"></canvas>
 
 <header>
   <div class="wrap">
-    <h1>🌿 Psychedelic Trip Picker — Hidden India</h1>
-    <p class="sub">Animated. Classy. Nature-vibes. Tap 👍 to vote (tap again to un-vote). Each card links to Google.</p>
+    <h1>🌌 Cosmic Trip Picker — Hidden India</h1>
+    <p class="sub">Tap 👍 to vote (tap again to un-vote). Filters work. Each card opens Google. Funny bursts included.</p>
 
     <div class="toolbar" id="filters">
       <div class="chip on" data-tag="mountains">Mountains</div>
@@ -190,6 +140,7 @@
       <div class="chip on" data-tag="culture">Culture</div>
       <div class="chip on" data-tag="psy">Trippy</div>
       <div class="chip on" data-tag="zero-crowd">Hidden</div>
+      <div class="chip on" data-tag="all">All</div>
     </div>
 
     <div class="searchbar">
@@ -197,7 +148,7 @@
       <button class="btn" id="clear">Clear</button>
       <button class="btn ghost" id="randomize">🎲 Randomize</button>
       <button class="btn hot" id="share">🔗 Share Votes</button>
-      <span class="hint">Votes are per-device. “Share Votes” copies a link that imports your scores.</span>
+      <span class="hint">Votes are per device. “Share Votes” copies a link that imports your scores.</span>
     </div>
   </div>
 </header>
@@ -231,7 +182,7 @@
 </div>
 
 <script>
-/* ===== DATA (all options we’ve discussed) ===== */
+/* ===== DATA (our full option set) ===== */
 const DESTS = [
   {id:'hampi-deep', name:'Hampi + Anegundi/Sanapur + Sandur', state:'Karnataka', why:'Boulder valleys, ruins, river-island hush; red-ore canyon drives.', tags:['psy','culture','mountains','rivers','zero-crowd']},
   {id:'gokarna-arc', name:'Gokarna Quiet Arc + Kumta–Honnavar Coves', state:'Karnataka Coast', why:'Cliff trails to pocket beaches, bioluminescence nights (if lucky).', tags:['beach','psy','zero-crowd']},
@@ -266,11 +217,70 @@ const DESTS = [
 /* ===== STATE ===== */
 const $ = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
-const votesKey = 'tripVotes_psy_v1';
+const votesKey = 'tripVotes_cosmos_v1';
 const picksKey = 'tripPicks_v1';
-let votes = loadVotes();          // { id: 0|1 }
-let activeTags = new Set(['mountains','beach','forest','rivers','desert','culture','psy','zero-crowd']);
+let votes = loadVotes();      // { id: 0|1 }
+let activeTags = new Set(['mountains','beach','forest','rivers','desert','culture','psy','zero-crowd']); // start with all on
 let searchQ = '';
+
+/* ===== STARFIELD (subtle) ===== */
+const starC = document.getElementById('stars');
+const sb = starC.getContext('2d');
+function fit(){ starC.width=innerWidth; starC.height=innerHeight; burstsC.width=innerWidth; burstsC.height=innerHeight; }
+addEventListener('resize', fit); fit();
+const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const stars = Array.from({length: prefersReduced?100:220}).map(()=>({
+  x: Math.random()*innerWidth,
+  y: Math.random()*innerHeight,
+  z: Math.random()*0.6+0.4, // parallax
+  tw: Math.random()*0.6+0.4
+}));
+function drawStars(t){
+  sb.clearRect(0,0,starC.width,starC.height);
+  sb.fillStyle='#ffffff';
+  stars.forEach(s=>{
+    const y = (s.y + 0.03*s.z) % innerHeight; s.y=y;
+    const a = 0.6 + 0.4*Math.sin((t/7000 + s.x*0.002)*s.tw);
+    sb.globalAlpha=a*0.8;
+    sb.fillRect(s.x, y, 1.2*s.z, 1.2*s.z);
+  });
+}
+
+/* ===== VOTE BURSTS (funny + classy) ===== */
+const burstsC = document.getElementById('bursts').getContext('2d');
+let particles=[];
+function burst(x,y,type='confetti',scale=1){
+  const N = 24+Math.floor(Math.random()*16);
+  const push=(p)=>particles.push(p);
+  for(let i=0;i<N;i++){
+    const ang = Math.random()*Math.PI*2;
+    const sp = (Math.random()*2+1.5)*scale;
+    if(type==='emoji'){
+      const emojis = ['✨','⭐','🌟','🪐','🌠','🌙','☄️','💫', Math.random()<0.08?'💩':'✨'];
+      push({x,y,vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-1.5, g:0.05, a:1, t:'emoji', txt:emojis[Math.floor(Math.random()*emojis.length)], sz:16+Math.random()*10});
+    }else{
+      const hues=[170,195,260,320];
+      const h=hues[Math.floor(Math.random()*hues.length)];
+      push({x,y,vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-1.2, g:0.06, a:1, t:'dot', c:`hsl(${h} 90% 70%)`, r:2+Math.random()*3});
+    }
+  }
+}
+function drawBursts(){
+  burstsC.clearRect(0,0,innerWidth,innerHeight);
+  particles.forEach(p=>{
+    p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.a*=0.985;
+    burstsC.globalAlpha=p.a;
+    if(p.t==='dot'){
+      burstsC.fillStyle=p.c;
+      burstsC.beginPath(); burstsC.arc(p.x,p.y,p.r,0,Math.PI*2); burstsC.fill();
+    }else{
+      burstsC.font = `${p.sz}px system-ui, emoji`;
+      burstsC.fillText(p.txt,p.x,p.y);
+    }
+  });
+  particles = particles.filter(p=>p.a>0.04 && p.y<innerHeight+40 && p.x>-40 && p.x<innerWidth+40);
+}
 
 /* ===== RENDER ===== */
 function render(){
@@ -278,8 +288,8 @@ function render(){
   const filtered = DESTS.filter(d=>{
     const q = searchQ.trim().toLowerCase();
     const qOk = !q || d.name.toLowerCase().includes(q) || d.state.toLowerCase().includes(q) || d.tags.join(' ').includes(q);
-    const tOk = d.tags.some(t=>activeTags.has(t));
-    return qOk && tOk;
+    const tagOk = activeTags.has('all') ? true : d.tags.some(t=>activeTags.has(t));
+    return qOk && tagOk;
   });
 
   if($('#sortVotes').dataset.sorted === 'true'){
@@ -292,7 +302,6 @@ function render(){
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
-      <div class="soft-glow"></div>
       <div class="badge">${d.state}${top ? ' · <span class="crown">👑 Top</span>' : ''}</div>
       <div class="title">${d.name}</div>
       <div class="meta">${d.tags.map(t=>`<span class="tag">#${t}</span>`).join(' ')}</div>
@@ -336,7 +345,6 @@ function shareVotes(){
   const url = `${location.origin}${location.pathname}?votes=${encodeURIComponent(JSON.stringify(votes))}`;
   navigator.clipboard.writeText(url).then(()=> alert('Shareable link copied!'));
 }
-
 function renderPinned(){
   const sel = $('#selected');
   const arr = JSON.parse(localStorage.getItem(picksKey) || '[]');
@@ -348,37 +356,30 @@ function renderPinned(){
     sel.appendChild(pill);
   });
 }
-
-function updateBoard(){
-  const board = $('#leaderboard');
-  const sorted = [...DESTS].sort((a,b)=> total(b.id) - total(a.id)).slice(0,8);
-  board.innerHTML = '';
-  sorted.forEach((d,i)=>{
-    const row = document.createElement('div'); row.className='row';
-    const crown = isTop(d.id) ? ' 👑' : '';
-    row.innerHTML = `<span class="name">${i+1}. ${d.name}${crown}</span>
-                     <span class="score">${total(d.id)}</span>`;
-    board.appendChild(row);
-  });
-  if(!sorted.length) board.innerHTML = '<span class="hint">No votes yet. Tap 👍 to start.</span>';
-}
-
 function resetOne(id){ votes[id]=0; saveVotes(); render(); }
 function addLongPress(el, cb){
-  let t;
-  el.addEventListener('touchstart', ()=>{ t=setTimeout(cb,600) }, {passive:true});
+  let t; el.addEventListener('touchstart', ()=>{ t=setTimeout(cb,600) }, {passive:true});
   ['touchend','touchcancel','touchmove'].forEach(ev=> el.addEventListener(ev, ()=> clearTimeout(t), {passive:true}));
 }
 
 /* ===== EVENTS ===== */
 document.addEventListener('click', (e)=>{
   const id = e.target?.dataset?.vote;
-  if(id){ votes[id] = votes[id] ? 0 : 1; saveVotes(); render(); return; }
+  if(id){
+    votes[id] = votes[id] ? 0 : 1;
+    saveVotes(); render();
 
+    // burst animation near the button
+    const rect = e.target.getBoundingClientRect();
+    const x = rect.left + rect.width/2, y = rect.top + window.scrollY + rect.height/2;
+    const types = ['confetti','emoji']; // emoji includes stars/planets + rare 💩
+    const type = types[Math.floor(Math.random()*types.length)];
+    burst(x, y, type, votes[id]?1.1:0.7);
+    return;
+  }
   const pick = e.target?.dataset?.pick;
   if(pick){
-    const arr = JSON.parse(localStorage.getItem(picksKey) || '[]');
-    if(!arr.includes(pick)) arr.push(pick);
+    const arr = JSON.parse(localStorage.getItem(picksKey) || '[]'); if(!arr.includes(pick)) arr.push(pick);
     localStorage.setItem(picksKey, JSON.stringify(arr)); renderPinned(); return;
   }
   const un = e.target?.dataset?.unpin;
@@ -388,6 +389,25 @@ document.addEventListener('click', (e)=>{
   }
   const r = e.target?.dataset?.reset;
   if(r){ resetOne(r); return; }
+});
+
+/* Filters — WORKING NOW */
+const filterWrap = document.getElementById('filters');
+filterWrap.addEventListener('click', (e)=>{
+  const tag = e.target?.dataset?.tag; if(!tag) return;
+  if(tag==='all'){
+    // toggle "All": if turning on, enable all; if turning off, keep current
+    const chip = e.target; const on = chip.classList.contains('on');
+    if(!on){ activeTags = new Set(['all']); $$('.chip').forEach(c=>c.classList.add('on')) }
+    else { activeTags.delete('all'); chip.classList.remove('on') }
+    render(); return;
+  }
+  const chip = e.target;
+  if(chip.classList.contains('on')){ chip.classList.remove('on'); activeTags.delete(tag); }
+  else { chip.classList.add('on'); activeTags.add(tag); }
+  if(activeTags.size===0){ activeTags.add('all'); $(`.chip[data-tag="all"]`).classList.add('on'); }
+  else { activeTags.delete('all'); $(`.chip[data-tag="all"]`).classList.remove('on'); }
+  render();
 });
 
 $('#q').addEventListener('input', e=>{ searchQ=e.target.value; render(); });
@@ -401,6 +421,17 @@ $('#sortVotes').addEventListener('click', (e)=>{
 });
 $('#resetVotes').addEventListener('click', ()=>{ if(confirm('Reset all votes on this device?')){ votes={}; saveVotes(); render(); } });
 $('#share').addEventListener('click', shareVotes);
+
+/* ===== LOOPS ===== */
+let last=0;
+function loop(ts){
+  if(!last) last=ts;
+  drawStars(ts);
+  drawBursts();
+  requestAnimationFrame(loop);
+}
+if(!prefersReduced) requestAnimationFrame(loop);
+else drawStars(0); // static stars if reduced motion
 
 /* ===== INIT ===== */
 render();
