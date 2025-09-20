@@ -4,11 +4,11 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>🪐 ARMAJ Trip Picker</title>
-<meta name="description" content="Mobile-first, classy-psychedelic trip picker. Animated cosmos, front-layer vote bursts, group voting, bottom-sheet leaderboard." />
+<meta name="description" content="ARMAJ Trip Picker — psychedelic but classy, with realtime group voting rooms via Firebase." />
 
 <!-- Social preview -->
 <meta property="og:title" content="ARMAJ Trip Picker" />
-<meta property="og:description" content="Vote on hidden India trips. Starry UI, funny vote bursts, share/import votes, live leaderboard." />
+<meta property="og:description" content="Vote on hidden India trips with your friends, live. Realtime rooms, animated cosmos, funny vote bursts." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://YOUR-USERNAME.github.io/YOUR-REPO/" />
 <meta property="og:image" content="https://YOUR-USERNAME.github.io/YOUR-REPO/cover.png" />
@@ -16,18 +16,22 @@
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2284%22>🪐</text></svg>">
 
+<!-- Firebase (compat builds for simplicity) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
 <style>
   :root{
     --fg:#eaf0ff; --muted:#b7c6e9; --line:#1a2342;
     --glass:#0a0f21cc; --glass2:#0a0e1ccc; --hot:#ffd166;
-    --card:#0b1126; --card2:#0a0f20; --btn:#0c1333; --btnb:#2a3569;
-    --cosmicPurple1:#7b5cff; --cosmicPurple2:#a78bfa; /* for FAB */
+    --btn:#0c1333; --btnb:#2a3569;
+    --cosmicPurple1:#7b5cff; --cosmicPurple2:#a78bfa;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{margin:0; color:var(--fg); font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:#070a16; overflow-x:hidden}
 
-  /* Backdrop layers */
   .nebula{ position:fixed; inset:-25vmax; z-index:-3; filter:blur(80px) saturate(120%);
     background:
       radial-gradient(60vmax 40vmax at 10% 10%, #18223d 0%, transparent 60%),
@@ -35,23 +39,16 @@
       radial-gradient(90vmax 60vmax at 40% 90%, #1a2448 0%, transparent 70%);
     opacity:.85; animation: driftNeb 40s ease-in-out infinite alternate;
   }
-  @keyframes driftNeb { 0%{transform:translate3d(0,0,0)} 100%{transform:translate3d(2vmin,-2vmin,0)} }
+  @keyframes driftNeb { from{transform:translate3d(0,0,0)} to{transform:translate3d(2vmin,-2vmin,0)} }
 
-  /* Stars behind content */
-  canvas#stars{ position:fixed; inset:0; z-index:-2; display:block; }
+  canvas#stars{ position:fixed; inset:0; z-index:-2; display:block }
+  canvas#bursts{ position:fixed; inset:0; z-index:22; pointer-events:none; mix-blend-mode:screen }
 
-  /* Vote bursts ABOVE content (3D-ish) */
-  canvas#bursts{
-    position:fixed; inset:0; z-index:22; /* header 20, sheet 24, fab 25 */
-    display:block; pointer-events:none; mix-blend-mode:screen;
-  }
-
-  /* Header (compact) */
   header{position:sticky; top:0; z-index:20; background:var(--glass2); border-bottom:1px solid var(--line); backdrop-filter:blur(10px) saturate(160%)}
   .wrap{max-width:1100px; margin:0 auto; padding:12px 14px}
   .toprow{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap}
   .brand{display:flex; align-items:center; gap:10px}
-  .brand h1{font-size:18px; margin:0; font-weight:900; letter-spacing:.2px}
+  .brand h1{font-size:18px; margin:0; font-weight:900}
   .brand .emoji{font-size:22px}
   .bar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px}
   input[type="search"]{flex:1; min-width:180px; background:#0a1024; color:var(--fg); border:1px solid #23315e; padding:10px 12px; border-radius:12px}
@@ -60,10 +57,8 @@
   .btn.ghost{background:transparent}
   .hint{color:#9fb3eb; font-size:12px}
 
-  /* Grid */
   main .grid{display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); padding:12px 14px 140px; max-width:1100px; margin:0 auto}
 
-  /* TRANSLUCENT GLASS CARDS */
   .card{
     background: linear-gradient(180deg, rgba(11,17,38,.55), rgba(10,15,32,.45));
     border: 1px solid rgba(32,40,77,.65);
@@ -80,7 +75,6 @@
   .count{font-weight:900; color:var(--hot)}
   .liked{background:linear-gradient(90deg,#1cc9a3,#80f)!important; color:#021611!important; border-color:#44e4d8!important}
 
-  /* Floating Trophy — COSMIC PURPLE */
   .fab{position:fixed; right:14px; bottom:84px; z-index:25}
   .fab button{
     border-radius:999px; padding:12px 16px; font-size:16px;
@@ -89,7 +83,6 @@
     box-shadow: 0 6px 22px -6px rgba(123,92,255,.8), 0 0 0 1px rgba(167,139,250,.4) inset;
   }
 
-  /* Bottom Sheet Leaderboard */
   .sheet{position:fixed; left:0; right:0; bottom:-70vh; height:70vh; background:var(--glass); border-top:1px solid var(--line); backdrop-filter:blur(10px) saturate(160%); border-top-left-radius:14px; border-top-right-radius:14px; z-index:24; transition:bottom .25s ease}
   .sheet.open{bottom:0}
   .sheet .drag{width:44px; height:5px; background:#30406f; border-radius:999px; margin:8px auto}
@@ -97,11 +90,9 @@
   .lead-row{display:flex; justify-content:space-between; gap:8px; padding:6px 0; border-bottom:1px dashed #213056}
   .lead-name{font-weight:800} .lead-score{font-weight:900; color:var(--hot)}
 
-  /* Footer */
   footer{position:sticky; bottom:0; background:var(--glass2); border-top:1px solid var(--line); z-index:20}
   footer .wrap{display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap}
 
-  /* Phone tweaks */
   @media (max-width:640px){
     .brand h1{font-size:16px}
     .btn{padding:12px 14px}
@@ -113,21 +104,25 @@
 <body>
 <div class="nebula" aria-hidden="true"></div>
 <canvas id="stars" aria-hidden="true"></canvas>
-<!-- bursts now ABOVE content -->
 <canvas id="bursts" aria-hidden="true"></canvas>
 
 <header>
   <div class="wrap">
     <div class="toprow">
       <div class="brand"><span class="emoji">🪐</span><h1>ARMAJ Trip Picker</h1></div>
-      <button id="share" class="btn hot">🔗 Share My Votes</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button id="share" class="btn hot">🔗 Share My Votes</button>
+        <button id="shareGroup" class="btn">🌐 Share Group Totals</button>
+      </div>
     </div>
     <div class="bar">
       <input id="q" type="search" placeholder="Search destinations, states, vibes…" />
       <button id="clear" class="btn">Clear</button>
       <button id="randomize" class="btn ghost">🎲 Randomize</button>
       <button id="importBtn" class="btn">⬇️ Import Votes</button>
-      <span class="hint">Group voting: each friend shares; one person imports all.</span>
+      <button id="createRoom" class="btn">🟣 Create Room</button>
+      <button id="joinRoom" class="btn ghost">🔑 Join Room</button>
+      <span class="hint">Tip: create or join a room so everyone’s votes sync live.</span>
     </div>
   </div>
 </header>
@@ -136,10 +131,8 @@
   <div class="grid" id="grid"></div>
 </main>
 
-<!-- Floating Trophy -->
 <div class="fab"><button id="toggleSheet">🏆 Leaderboard</button></div>
 
-<!-- Bottom Sheet Leaderboard -->
 <div id="sheet" class="sheet" aria-hidden="true">
   <div class="drag"></div>
   <div class="inside">
@@ -150,10 +143,6 @@
       <button id="resetVotes" class="btn">🗑️ Reset My Device</button>
       <button id="resetGroup" class="btn">🗑️ Reset Group</button>
     </div>
-    <details style="margin-top:10px">
-      <summary>How group votes work</summary>
-      <p class="hint">Each device stores its own 0/1 votes. “Share My Votes” copies a link with your choices. Paste friends’ links via “Import Votes” to merge. Leaderboard shows the sum.</p>
-    </details>
   </div>
 </div>
 
@@ -162,12 +151,16 @@
     <div class="hint">Tap 👍 to vote (tap again to un-vote). Long-press 👍 to reset that card.</div>
     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
       <span id="groupCount" class="hint"></span>
+      <span id="roomPill" class="hint" style="display:none">
+        · Room: <b id="roomCode"></b>
+        <button id="copyInvite" class="btn ghost" style="padding:6px 10px">Copy Invite</button>
+      </span>
     </div>
   </div>
 </footer>
 
 <script>
-/* ---------- DATA ---------- */
+/* ----------------------- DATA ----------------------- */
 const DESTS = [
   {id:'hampi-deep', name:'Hampi + Anegundi/Sanapur + Sandur', state:'Karnataka', why:'Boulder valleys, ruins, river-island hush; red-ore canyon drives.', tags:['psy','culture','mountains','rivers','zero-crowd']},
   {id:'gokarna-arc', name:'Gokarna Quiet Arc + Kumta–Honnavar Coves', state:'Karnataka Coast', why:'Cliff trails to pocket beaches, bioluminescence nights (if lucky).', tags:['beach','psy','zero-crowd']},
@@ -198,75 +191,62 @@ const DESTS = [
   {id:'pench-mh', name:'Pench (Sillari, MH side)', state:'Maharashtra', why:'Kipling woods; calmer gates than MP side.', tags:['forest','rivers']}
 ];
 
-/* ---------- STATE ---------- */
+/* -------------------- STATE -------------------- */
 const $ = s => document.querySelector(s);
-const votesKey = 'votes_device_v3';
-const groupKey = 'votes_group_v3';
+const votesKey = 'votes_device_v5';
+const groupKey = 'votes_group_v5';
 let myVotes = loadJson(votesKey) || {};
 let groupMembers = loadJson(groupKey) || [];
 function loadJson(k){ try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null} }
 function saveJson(k,v){ localStorage.setItem(k, JSON.stringify(v)) }
 
-/* ---------- CANVASES + ANIM ---------- */
+/* ---------------- BACKGROUND ANIM ---------------- */
 const starCanvas = document.getElementById('stars'), starCtx = starCanvas.getContext('2d');
 const burstsCanvas = document.getElementById('bursts'), burstsCtx = burstsCanvas.getContext('2d');
 function fit(){ starCanvas.width=innerWidth; starCanvas.height=innerHeight; burstsCanvas.width=innerWidth; burstsCanvas.height=innerHeight }
 addEventListener('resize', fit); fit();
-
-/* Stars + shooting stars */
 const stars = Array.from({length: 220}).map(()=>({ x:Math.random()*innerWidth, y:Math.random()*innerHeight, z:Math.random()*0.6+0.4, tw:Math.random()*0.6+0.4 }));
 let shooters = [];
-function maybeShoot(){ if(Math.random()<0.01){ shooters.push({x:Math.random()*innerWidth*0.6, y:Math.random()*innerHeight*0.4, vx:3+Math.random()*2, vy:1+Math.random()*1.5, a:1}); } }
+function maybeShoot(){ if(Math.random()<0.012){ shooters.push({x:Math.random()*innerWidth*0.6, y:Math.random()*innerHeight*0.4, vx:3+Math.random()*2, vy:1+Math.random()*1.5, a:1}); } }
 function drawStars(t){
   starCtx.clearRect(0,0,starCanvas.width,starCanvas.height);
   starCtx.fillStyle='#fff';
-  stars.forEach(s=>{
-    s.y = (s.y + 0.03*s.z) % innerHeight;
-    const a = 0.6 + 0.4*Math.sin((t/7000 + s.x*0.002)*s.tw);
-    starCtx.globalAlpha = a*0.9;
-    starCtx.fillRect(s.x, s.y, 1.2*s.z, 1.2*s.z);
-  });
+  stars.forEach(s=>{ s.y=(s.y+0.03*s.z)%innerHeight; const a=0.6+0.4*Math.sin((t/7000+s.x*0.002)*s.tw); starCtx.globalAlpha=a*0.9; starCtx.fillRect(s.x,s.y,1.2*s.z,1.2*s.z); });
   maybeShoot();
-  shooters.forEach(sh=>{
-    starCtx.globalAlpha = sh.a;
-    const grad = starCtx.createLinearGradient(sh.x,sh.y, sh.x-60,sh.y-20);
+  shooters.forEach(sh=>{ starCtx.globalAlpha = sh.a;
+    const grad=starCtx.createLinearGradient(sh.x,sh.y, sh.x-60,sh.y-20);
     grad.addColorStop(0,'#aef'); grad.addColorStop(1,'transparent');
-    starCtx.strokeStyle = grad; starCtx.lineWidth = 2;
-    starCtx.beginPath(); starCtx.moveTo(sh.x,sh.y); starCtx.lineTo(sh.x-60, sh.y-20); starCtx.stroke();
-    sh.x += sh.vx; sh.y += sh.vy; sh.a *= 0.97;
+    starCtx.strokeStyle=grad; starCtx.lineWidth=2; starCtx.beginPath(); starCtx.moveTo(sh.x,sh.y); starCtx.lineTo(sh.x-60,sh.y-20); starCtx.stroke();
+    sh.x+=sh.vx; sh.y+=sh.vy; sh.a*=0.97;
   });
-  shooters = shooters.filter(s=> s.a>0.05 && s.x<innerWidth+80 && s.y<innerHeight+80);
+  shooters=shooters.filter(s=> s.a>0.05 && s.x<innerWidth+80 && s.y<innerHeight+80);
 }
-
-/* Vote bursts (front canvas, glowing) */
-burstsCtx.globalCompositeOperation = 'lighter';
+burstsCtx.globalCompositeOperation='lighter';
 let particles=[];
 function burst(x,y,type='confetti',scale=1){
-  const N = 24+Math.floor(Math.random()*16);
+  const N=24+Math.floor(Math.random()*16);
   for(let i=0;i<N;i++){
-    const ang = Math.random()*Math.PI*2, sp=(Math.random()*2+1.5)*scale;
+    const ang=Math.random()*Math.PI*2, sp=(Math.random()*2+1.5)*scale;
     if(type==='emoji'){
       const emojis=['✨','⭐','🌟','🪐','🌠','🌙','☄️','💫', Math.random()<0.08?'💩':'✨'];
-      particles.push({x,y,vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-1.5, g:0.05, a:1, t:'e', txt:emojis[Math.floor(Math.random()*emojis.length)], sz:16+Math.random()*10});
+      particles.push({x,y,vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp-1.5,g:0.05,a:1,t:'e',txt:emojis[Math.floor(Math.random()*emojis.length)],sz:16+Math.random()*10});
     }else{
       const hues=[170,195,260,320]; const h=hues[Math.floor(Math.random()*hues.length)];
-      particles.push({x,y,vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-1.2, g:0.06, a:1, t:'d', c:`hsl(${h} 90% 70%)`, r:2+Math.random()*3});
+      particles.push({x,y,vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp-1.2,g:0.06,a:1,t:'d',c:`hsl(${h} 90% 70%)`,r:2+Math.random()*3});
     }
   }
 }
 function drawBursts(){
   burstsCtx.clearRect(0,0,burstsCanvas.width,burstsCanvas.height);
-  particles.forEach(p=>{
-    p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.a*=0.985;
-    burstsCtx.globalAlpha=p.a;
+  particles.forEach(p=>{ p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.a*=0.985; burstsCtx.globalAlpha=p.a;
     if(p.t==='d'){ burstsCtx.fillStyle=p.c; burstsCtx.beginPath(); burstsCtx.arc(p.x,p.y,p.r,0,Math.PI*2); burstsCtx.fill(); }
     else { burstsCtx.font=`${p.sz}px system-ui, emoji`; burstsCtx.fillText(p.txt,p.x,p.y); }
   });
-  particles = particles.filter(p=>p.a>0.04 && p.y<innerHeight+60 && p.x>-60 && p.x<innerWidth+60);
+  particles=particles.filter(p=>p.a>0.04 && p.y<innerHeight+60 && p.x>-60 && p.x<innerWidth+60);
 }
 
-/* ---------- GROUP & RENDER ---------- */
-function groupTotalFor(id){ let sum = myVotes[id]?1:0; for(const m of groupMembers){ if(m[id]) sum += 1; } return sum; }
+/* ---------------- RENDER ---------------- */
+function groupTotalFor(id){ let sum=myVotes[id]?1:0; for(const m of groupMembers){ if(m[id]) sum+=1; } return sum; }
 function topScore(){ return Math.max(0, ...DESTS.map(d=>groupTotalFor(d.id))); }
 
 function render(){
@@ -290,18 +270,13 @@ function render(){
       <div class="actions">
         <button class="btn ${mine?'liked':''}" data-vote="${d.id}" aria-pressed="${mine}">${mine?'✅ Voted':'👍 Vote'}</button>
         <span class="count" id="c_${d.id}">${total}</span>
-        <a class="btn ghost" target="_blank" rel="noopener" href="${google(d.name)}">🔎 Google</a>
+        <a class="btn ghost" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent(d.name+' India')}">🔎 Google</a>
         <button class="btn ghost" data-reset="${d.id}" title="Reset this card">♻️</button>
       </div>`;
     addLongPress(el.querySelector(`[data-vote="${d.id}"]`), ()=>{ delete myVotes[d.id]; saveJson(votesKey,myVotes); render(); });
     grid.appendChild(el);
   });
 
-  renderLeaderboard();
-  $('#groupCount').textContent = `Group members merged: ${1 + groupMembers.length}`;
-}
-
-function renderLeaderboard(){
   const container = $('#leaderboard'); container.innerHTML='';
   const sorted = [...DESTS].sort((a,b)=>groupTotalFor(b.id)-groupTotalFor(a.id)).slice(0,12);
   sorted.forEach((d,i)=>{
@@ -310,18 +285,17 @@ function renderLeaderboard(){
     row.innerHTML = `<div class="lead-name">${i+1}. ${d.name}</div><div class="lead-score">${groupTotalFor(d.id)}</div>`;
     container.appendChild(row);
   });
+
+  $('#groupCount').textContent = `Group members merged: ${1 + groupMembers.length}${roomId ? ' · live' : ''}`;
 }
 
-/* ---------- HELPERS & EVENTS ---------- */
-function google(n){ return `https://www.google.com/search?q=${encodeURIComponent(n+' India')}` }
+/* ---------------- EVENTS ---------------- */
 function addLongPress(el, cb){ let t; el.addEventListener('touchstart', ()=>{ t=setTimeout(cb,600) }, {passive:true}); ['touchend','touchcancel','touchmove'].forEach(ev=> el.addEventListener(ev, ()=> clearTimeout(t), {passive:true})); }
-
 document.addEventListener('click', (e)=>{
   const id = e.target?.dataset?.vote;
   if(id){
-    const wasOn = !!myVotes[id];
-    if(wasOn) delete myVotes[id]; else myVotes[id]=1;
-    saveJson(votesKey,myVotes);
+    const wasOn = !!myVotes[id]; if(wasOn) delete myVotes[id]; else myVotes[id]=1;
+    saveJson(votesKey,myVotes); // wrapped later to push realtime
     const r = e.target.getBoundingClientRect();
     const x = r.left + r.width/2, y = r.top + window.scrollY + r.height/2;
     burst(x,y, Math.random()<0.5?'confetti':'emoji', wasOn?0.7:1.1);
@@ -330,58 +304,164 @@ document.addEventListener('click', (e)=>{
   const reset = e.target?.dataset?.reset;
   if(reset){ delete myVotes[reset]; saveJson(votesKey,myVotes); render(); return; }
 });
-
 $('#q').addEventListener('input', render);
 $('#clear').addEventListener('click', ()=>{ $('#q').value=''; render(); });
 $('#randomize').addEventListener('click', ()=>{ DESTS.sort(()=>Math.random()-.5); render(); });
 
+/* --------- Share/Import (still handy without room) --------- */
 $('#share').addEventListener('click', ()=>{
   const url = `${location.origin}${location.pathname}?votes=${encodeURIComponent(JSON.stringify(myVotes))}`;
-  navigator.clipboard.writeText(url).then(()=> alert('Copied your votes link! Paste this in the group.'));
+  navigator.clipboard.writeText(url).then(()=> alert('Copied your votes link!'));
 });
-
+$('#shareGroup').addEventListener('click', ()=>{
+  const payload = [myVotes, ...groupMembers];
+  const url = `${location.origin}${location.pathname}?group=${encodeURIComponent(JSON.stringify(payload))}`;
+  navigator.clipboard.writeText(url).then(()=> alert('Copied Group Totals link!'));
+});
 $('#importBtn').addEventListener('click', ()=>{
-  const link = prompt('Paste a friend’s votes link (from “Share My Votes”).');
+  const link = prompt('Paste a friend’s link (from “Share My Votes”) or a Group Totals link.');
   if(!link) return;
   try{
     const u = new URL(link);
-    const raw = u.searchParams.get('votes'); if(!raw) return alert('No votes found in that link.');
-    const obj = JSON.parse(decodeURIComponent(raw));
-    const already = groupMembers.some(m => JSON.stringify(m)===JSON.stringify(obj));
-    if(!already){ groupMembers.push(obj); saveJson(groupKey, groupMembers); }
-    render();
-  }catch(err){ alert('Could not import. Make sure you pasted the exact link.'); }
+    const g = u.searchParams.get('group'); const v = u.searchParams.get('votes');
+    if(g){
+      const arr = JSON.parse(decodeURIComponent(g));
+      const set = new Set(groupMembers.map(m=>JSON.stringify(m)));
+      arr.forEach(m=>{ const s=JSON.stringify(m); if(!set.has(s)){ groupMembers.push(m); set.add(s);} });
+      saveJson(groupKey, groupMembers); render(); alert('Imported group votes.'); return;
+    }
+    if(v){
+      const obj = JSON.parse(decodeURIComponent(v));
+      const already = groupMembers.some(m=>JSON.stringify(m)===JSON.stringify(obj));
+      if(!already){ groupMembers.push(obj); saveJson(groupKey, groupMembers); }
+      render(); alert('Imported a friend’s votes.'); return;
+    }
+    alert('No votes found.');
+  }catch{ alert('Bad link.'); }
 });
-
 $('#resetVotes').addEventListener('click', ()=>{ if(confirm('Reset ONLY this device’s votes?')){ myVotes={}; saveJson(votesKey,myVotes); render(); } });
 $('#resetGroup').addEventListener('click', ()=>{ if(confirm('Remove all imported friends and keep only this device?')){ groupMembers=[]; saveJson(groupKey, groupMembers); render(); } });
-
 $('#sortVotes').addEventListener('click', (e)=>{
   const on = e.target.dataset.sorted === 'true';
   e.target.dataset.sorted = on ? 'false' : 'true';
   e.target.textContent = on ? 'Sort by Votes' : 'Sorted ✓';
   render();
 });
+const sheet = $('#sheet'); $('#toggleSheet').addEventListener('click', ()=> sheet.classList.toggle('open'));
 
-/* Bottom sheet toggle */
-const sheet = $('#sheet'), toggle = $('#toggleSheet');
-toggle.addEventListener('click', ()=> sheet.classList.toggle('open'));
-
-/* Loops */
+/* ---------------- RAF LOOP ---------------- */
 function loop(ts){ drawStars(ts); drawBursts(); requestAnimationFrame(loop); }
 requestAnimationFrame(loop);
 
-/* One-time import via URL */
+/* ----- Import via URL once (non-realtime convenience) ----- */
 (function initImportFromURL(){
   const qs = new URLSearchParams(location.search);
-  if(qs.get('votes')){
-    const obj = JSON.parse(decodeURIComponent(qs.get('votes')));
-    const same = groupMembers.some(m => JSON.stringify(m)===JSON.stringify(obj));
-    if(!same){ groupMembers.push(obj); saveJson(groupKey, groupMembers); }
-    history.replaceState({}, '', location.pathname);
-  }
+  try{
+    if(qs.get('group')){
+      const arr = JSON.parse(decodeURIComponent(qs.get('group')));
+      const set = new Set(groupMembers.map(m=>JSON.stringify(m)));
+      arr.forEach(m=>{ const s=JSON.stringify(m); if(!set.has(s)){ groupMembers.push(m); set.add(s);} });
+      saveJson(groupKey, groupMembers);
+      history.replaceState({}, '', location.pathname);
+    } else if(qs.get('votes')){
+      const obj = JSON.parse(decodeURIComponent(qs.get('votes')));
+      const same = groupMembers.some(m => JSON.stringify(m)===JSON.stringify(obj));
+      if(!same){ groupMembers.push(obj); saveJson(groupKey, groupMembers); }
+      history.replaceState({}, '', location.pathname);
+    }
+  }catch{}
 })();
 render();
+
+/* ================== FIREBASE REALTIME ROOMS ================== */
+/* 1) PASTE YOUR FIREBASE CONFIG BELOW (from Project Settings → Web App)
+   Replace the placeholder strings with your real keys. */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID"
+};
+/* ============================================================= */
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+let uid = null;
+let roomId = null;
+let unsubMembers = null;
+
+auth.signInAnonymously().catch(console.error);
+auth.onAuthStateChanged(u => { uid = u ? u.uid : null; });
+
+function randomRoom(){ return Math.random().toString(36).slice(2,8); }
+function inviteURL(id){ return `${location.origin}${location.pathname}?room=${encodeURIComponent(id)}`; }
+function showRoomUI(id){
+  roomId = id;
+  const pill = document.getElementById('roomPill');
+  const code = document.getElementById('roomCode');
+  pill.style.display='inline'; code.textContent=id;
+}
+function attachMembersListener(id){
+  if (unsubMembers){ unsubMembers(); unsubMembers=null; }
+  unsubMembers = db.collection('rooms').doc(id).collection('members')
+    .onSnapshot(snap=>{
+      groupMembers = [];
+      snap.forEach(doc=>{
+        if(doc.id !== uid){
+          const d = doc.data();
+          if(d && d.votes) groupMembers.push(d.votes);
+        }
+      });
+      saveJson(groupKey, groupMembers);
+      render();
+    });
+}
+let writeTimer=null;
+function pushMyVotes(){
+  if(!uid || !roomId) return;
+  clearTimeout(writeTimer);
+  writeTimer=setTimeout(()=>{
+    db.collection('rooms').doc(roomId).collection('members').doc(uid)
+      .set({ votes: myVotes, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, {merge:true})
+      .catch(console.error);
+  }, 200);
+}
+document.getElementById('createRoom').addEventListener('click', ()=>{
+  const id = randomRoom();
+  showRoomUI(id); attachMembersListener(id); pushMyVotes();
+  history.replaceState({}, '', `?room=${encodeURIComponent(id)}`);
+  alert('Room created. Share the invite!');
+});
+document.getElementById('joinRoom').addEventListener('click', ()=>{
+  const code = prompt('Enter room code (e.g., 8kz2rw) or paste an invite URL with ?room=...');
+  if(!code) return;
+  try{
+    let id = code.trim();
+    if(id.includes('?')){ const u=new URL(id); id = u.searchParams.get('room') || ''; }
+    if(!id) return alert('Could not find a room code.');
+    showRoomUI(id); attachMembersListener(id); pushMyVotes();
+    history.replaceState({}, '', `?room=${encodeURIComponent(id)}`);
+  }catch{ alert('Invalid code or URL.'); }
+});
+document.getElementById('copyInvite').addEventListener('click', ()=>{
+  if(!roomId) return;
+  navigator.clipboard.writeText(inviteURL(roomId)).then(()=> alert('Invite link copied!'));
+});
+(function autoJoinFromURL(){
+  const qs = new URLSearchParams(location.search);
+  const r = qs.get('room');
+  if(r){
+    showRoomUI(r); attachMembersListener(r);
+    const tryPush=setInterval(()=>{ if(uid){ pushMyVotes(); clearInterval(tryPush);} },200);
+  }
+})();
+// Wrap saveJson so any change to myVotes auto-pushes
+const _saveJson = saveJson;
+saveJson = function(k,v){
+  _saveJson(k,v);
+  if(k===votesKey) pushMyVotes();
+};
 </script>
 </body>
 </html>
