@@ -4,11 +4,11 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>🪐 ARMAJ Trip Picker</title>
-<meta name="description" content="ARMAJ Trip Picker — psychedelic but classy, with realtime group voting rooms via Firebase." />
+<meta name="description" content="ARMAJ Trip Picker — psychedelic but classy, with realtime group voting (one global room) via Firebase." />
 
 <!-- Social preview -->
 <meta property="og:title" content="ARMAJ Trip Picker" />
-<meta property="og:description" content="Vote on hidden India trips with your friends, live. Realtime rooms, animated cosmos, funny vote bursts." />
+<meta property="og:description" content="Vote on hidden India trips with your friends, live. Realtime global room, animated cosmos, funny vote bursts." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://YOUR-USERNAME.github.io/YOUR-REPO/" />
 <meta property="og:image" content="https://YOUR-USERNAME.github.io/YOUR-REPO/cover.png" />
@@ -32,6 +32,7 @@
   html,body{height:100%}
   body{margin:0; color:var(--fg); font-family: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial; background:#070a16; overflow-x:hidden}
 
+  /* Backdrop */
   .nebula{ position:fixed; inset:-25vmax; z-index:-3; filter:blur(80px) saturate(120%);
     background:
       radial-gradient(60vmax 40vmax at 10% 10%, #18223d 0%, transparent 60%),
@@ -52,7 +53,7 @@
   .brand .emoji{font-size:22px}
   .bar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px}
   input[type="search"]{flex:1; min-width:180px; background:#0a1024; color:var(--fg); border:1px solid #23315e; padding:10px 12px; border-radius:12px}
-  .btn{background:var(--btn); color:#eaf6ff; border:1px solid var(--btnb); padding:10px 12px; border-radius:12px; cursor:pointer; font-weight:800}
+  .btn{background:var(--btn); color:#eaf6ff; border:1px solid #2a3569; padding:10px 12px; border-radius:12px; cursor:pointer; font-weight:800}
   .btn.hot{background:linear-gradient(90deg,#19d1a3,#87a9ff); color:#041515; border-color:#47e2d4}
   .btn.ghost{background:transparent}
   .hint{color:#9fb3eb; font-size:12px}
@@ -120,9 +121,7 @@
       <button id="clear" class="btn">Clear</button>
       <button id="randomize" class="btn ghost">🎲 Randomize</button>
       <button id="importBtn" class="btn">⬇️ Import Votes</button>
-      <button id="createRoom" class="btn">🟣 Create Room</button>
-      <button id="joinRoom" class="btn ghost">🔑 Join Room</button>
-      <span class="hint">Tip: create or join a room so everyone’s votes sync live.</span>
+      <span class="hint">Live sync is ON (one global room). Just share the page link in WhatsApp.</span>
     </div>
   </div>
 </header>
@@ -141,7 +140,7 @@
     <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap">
       <button id="sortVotes" class="btn">Sort by Votes</button>
       <button id="resetVotes" class="btn">🗑️ Reset My Device</button>
-      <button id="resetGroup" class="btn">🗑️ Reset Group</button>
+      <button id="resetGroup" class="btn">🗑️ Reset Imported</button>
     </div>
   </div>
 </div>
@@ -151,9 +150,8 @@
     <div class="hint">Tap 👍 to vote (tap again to un-vote). Long-press 👍 to reset that card.</div>
     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
       <span id="groupCount" class="hint"></span>
-      <span id="roomPill" class="hint" style="display:none">
-        · Room: <b id="roomCode"></b>
-        <button id="copyInvite" class="btn ghost" style="padding:6px 10px">Copy Invite</button>
+      <span id="roomPill" class="hint" style="display:inline">
+        · Room: <b id="roomCode">armaj-room</b> · live
       </span>
     </div>
   </div>
@@ -176,7 +174,6 @@ const DESTS = [
   {id:'bhogwe', name:'Bhogwe–Nivati–Vengurla Arc', state:'South Maharashtra', why:'Empty coves, laterite cliffs, teal water; pre-2005 Goa vibe.', tags:['beach','zero-crowd']},
   {id:'kutch', name:'Kutch Crafts + White Rann', state:'Gujarat', why:'Salt-desert moonscapes with living craft villages.', tags:['desert','culture','zero-crowd']},
   {id:'dzongu', name:'Dzongu (Lepcha Reserve)', state:'North Sikkim', why:'Sacred groves, hot springs, rivers; Lepcha culture.', tags:['mountains','forest','zero-crowd']},
-
   {id:'koyna', name:'Koyna–Vasota', state:'Maharashtra', why:'Boat across Koyna backwaters + jungle trek to cliff-top fort.', tags:['forest','rivers','zero-crowd']},
   {id:'chandoli', name:'Chandoli National Park', state:'Maharashtra', why:'Maratha forts swallowed by forest; gaur & civet nights.', tags:['forest','zero-crowd']},
   {id:'radhanagari', name:'Radhanagari Bison Sanctuary', state:'Maharashtra', why:'Foggy grasslands, gaur herds, blue-hour plateaus.', tags:['forest','zero-crowd']},
@@ -193,8 +190,8 @@ const DESTS = [
 
 /* -------------------- STATE -------------------- */
 const $ = s => document.querySelector(s);
-const votesKey = 'votes_device_v5';
-const groupKey = 'votes_group_v5';
+const votesKey = 'votes_device_v6';
+const groupKey = 'votes_group_v6';
 let myVotes = loadJson(votesKey) || {};
 let groupMembers = loadJson(groupKey) || [];
 function loadJson(k){ try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null} }
@@ -254,7 +251,7 @@ function render(){
   const grid = $('#grid'); grid.innerHTML='';
   const arr = DESTS
     .filter(d => !q || d.name.toLowerCase().includes(q) || d.state.toLowerCase().includes(q) || d.tags.join(' ').includes(q))
-    .sort((a,b)=> +($('#sortVotes').dataset.sorted==='true') ? (groupTotalFor(b.id)-groupTotalFor(a.id)) : 0);
+    .sort((a,b)=> +($('#sortVotes').dataset?.sorted==='true') ? (groupTotalFor(b.id)-groupTotalFor(a.id)) : 0);
 
   arr.forEach(d=>{
     const mine = !!myVotes[d.id];
@@ -286,7 +283,7 @@ function render(){
     container.appendChild(row);
   });
 
-  $('#groupCount').textContent = `Group members merged: ${1 + groupMembers.length}${roomId ? ' · live' : ''}`;
+  $('#groupCount').textContent = `Members seen (including you): ${1 + groupMembers.length} · live`;
 }
 
 /* ---------------- EVENTS ---------------- */
@@ -295,7 +292,7 @@ document.addEventListener('click', (e)=>{
   const id = e.target?.dataset?.vote;
   if(id){
     const wasOn = !!myVotes[id]; if(wasOn) delete myVotes[id]; else myVotes[id]=1;
-    saveJson(votesKey,myVotes); // wrapped later to push realtime
+    saveJson(votesKey,myVotes);
     const r = e.target.getBoundingClientRect();
     const x = r.left + r.width/2, y = r.top + window.scrollY + r.height/2;
     burst(x,y, Math.random()<0.5?'confetti':'emoji', wasOn?0.7:1.1);
@@ -308,7 +305,7 @@ $('#q').addEventListener('input', render);
 $('#clear').addEventListener('click', ()=>{ $('#q').value=''; render(); });
 $('#randomize').addEventListener('click', ()=>{ DESTS.sort(()=>Math.random()-.5); render(); });
 
-/* --------- Share/Import (still handy without room) --------- */
+/* --------- Share/Import (optional, still available) --------- */
 $('#share').addEventListener('click', ()=>{
   const url = `${location.origin}${location.pathname}?votes=${encodeURIComponent(JSON.stringify(myVotes))}`;
   navigator.clipboard.writeText(url).then(()=> alert('Copied your votes link!'));
@@ -341,12 +338,6 @@ $('#importBtn').addEventListener('click', ()=>{
 });
 $('#resetVotes').addEventListener('click', ()=>{ if(confirm('Reset ONLY this device’s votes?')){ myVotes={}; saveJson(votesKey,myVotes); render(); } });
 $('#resetGroup').addEventListener('click', ()=>{ if(confirm('Remove all imported friends and keep only this device?')){ groupMembers=[]; saveJson(groupKey, groupMembers); render(); } });
-$('#sortVotes').addEventListener('click', (e)=>{
-  const on = e.target.dataset.sorted === 'true';
-  e.target.dataset.sorted = on ? 'false' : 'true';
-  e.target.textContent = on ? 'Sort by Votes' : 'Sorted ✓';
-  render();
-});
 const sheet = $('#sheet'); $('#toggleSheet').addEventListener('click', ()=> sheet.classList.toggle('open'));
 
 /* ---------------- RAF LOOP ---------------- */
@@ -373,95 +364,89 @@ requestAnimationFrame(loop);
 })();
 render();
 
-/* ================== FIREBASE REALTIME ROOMS ================== */
-/* 1) PASTE YOUR FIREBASE CONFIG BELOW (from Project Settings → Web App)
-   Replace the placeholder strings with your real keys. */
+/* ================== FIREBASE REALTIME (ONE GLOBAL ROOM) ================== */
+/* 1) PASTE YOUR FIREBASE CONFIG BELOW (from Project Settings → Web App) */
 const firebaseConfig = {
   apiKey: "AIzaSyAJfDC0lylk5QXN7o-Nu6xvHcy7vC41mKg",
   authDomain: "trip-planner-f33b2.firebaseapp.com",
   projectId: "trip-planner-f33b2"
 };
-/* ============================================================= */
+/* ======================================================================== */
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-let uid = null;
-let roomId = null;
-let unsubMembers = null;
-
-auth.signInAnonymously().catch(console.error);
-auth.onAuthStateChanged(u => { uid = u ? u.uid : null; });
-
-function randomRoom(){ return Math.random().toString(36).slice(2,8); }
-function inviteURL(id){ return `${location.origin}${location.pathname}?room=${encodeURIComponent(id)}`; }
-function showRoomUI(id){
-  roomId = id;
-  const pill = document.getElementById('roomPill');
-  const code = document.getElementById('roomCode');
-  pill.style.display='inline'; code.textContent=id;
+function notConfigured(cfg){
+  return !cfg || !cfg.apiKey || cfg.apiKey.includes('YOUR_API_KEY') || !cfg.projectId || cfg.projectId.includes('YOUR_PROJECT_ID');
 }
-function attachMembersListener(id){
-  if (unsubMembers){ unsubMembers(); unsubMembers=null; }
-  unsubMembers = db.collection('rooms').doc(id).collection('members')
-    .onSnapshot(snap=>{
-      groupMembers = [];
-      snap.forEach(doc=>{
-        if(doc.id !== uid){
-          const d = doc.data();
-          if(d && d.votes) groupMembers.push(d.votes);
-        }
-      });
-      saveJson(groupKey, groupMembers);
-      render();
-    });
-}
-let writeTimer=null;
-function pushMyVotes(){
-  if(!uid || !roomId) return;
-  clearTimeout(writeTimer);
-  writeTimer=setTimeout(()=>{
-    db.collection('rooms').doc(roomId).collection('members').doc(uid)
-      .set({ votes: myVotes, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, {merge:true})
-      .catch(console.error);
-  }, 200);
-}
-document.getElementById('createRoom').addEventListener('click', ()=>{
-  const id = randomRoom();
-  showRoomUI(id); attachMembersListener(id); pushMyVotes();
-  history.replaceState({}, '', `?room=${encodeURIComponent(id)}`);
-  alert('Room created. Share the invite!');
-});
-document.getElementById('joinRoom').addEventListener('click', ()=>{
-  const code = prompt('Enter room code (e.g., 8kz2rw) or paste an invite URL with ?room=...');
-  if(!code) return;
+const GLOBAL_ROOM = 'armaj-room'; // everyone joins this
+
+let uid = null, unsubMembers = null;
+
+(async function bootFirebase(){
   try{
-    let id = code.trim();
-    if(id.includes('?')){ const u=new URL(id); id = u.searchParams.get('room') || ''; }
-    if(!id) return alert('Could not find a room code.');
-    showRoomUI(id); attachMembersListener(id); pushMyVotes();
-    history.replaceState({}, '', `?room=${encodeURIComponent(id)}`);
-  }catch{ alert('Invalid code or URL.'); }
-});
-document.getElementById('copyInvite').addEventListener('click', ()=>{
-  if(!roomId) return;
-  navigator.clipboard.writeText(inviteURL(roomId)).then(()=> alert('Invite link copied!'));
-});
-(function autoJoinFromURL(){
-  const qs = new URLSearchParams(location.search);
-  const r = qs.get('room');
-  if(r){
-    showRoomUI(r); attachMembersListener(r);
-    const tryPush=setInterval(()=>{ if(uid){ pushMyVotes(); clearInterval(tryPush);} },200);
+    if (notConfigured(firebaseConfig)) {
+      alert('Firebase is not configured.\nPaste your real firebaseConfig (apiKey, authDomain, projectId) into index.html and deploy again.');
+      console.warn('Missing/placeholder Firebase config.');
+      return;
+    }
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // Sign in anonymously
+    await auth.signInAnonymously().catch(e=>{
+      alert('Firebase Auth error: ' + (e?.message || e));
+      console.error(e);
+    });
+
+    auth.onAuthStateChanged(user=>{
+      uid = user ? user.uid : null;
+      if (!uid) return;
+
+      // Listen to everyone else in the global room
+      if (unsubMembers) { unsubMembers(); unsubMembers = null; }
+      unsubMembers = db.collection('rooms').doc(GLOBAL_ROOM).collection('members')
+        .onSnapshot(snap=>{
+          groupMembers = [];
+          snap.forEach(doc=>{
+            if(doc.id !== uid){
+              const d = doc.data();
+              if(d && d.votes) groupMembers.push(d.votes);
+            }
+          });
+          saveJson(groupKey, groupMembers);
+          render();
+        }, err=>{
+          alert('Firestore listen error: ' + (err?.message || err));
+          console.error(err);
+        });
+
+      // Any change to myVotes gets pushed (wrap saveJson)
+      const _saveJson = saveJson;
+      saveJson = function(k,v){
+        _saveJson(k,v);
+        if (k === votesKey) pushMyVotes(db);
+      };
+
+      // Push initial votes
+      pushMyVotes(db);
+    });
+
+    function pushMyVotes(dbRef){
+      if(!uid) return;
+      dbRef.collection('rooms').doc(GLOBAL_ROOM).collection('members').doc(uid)
+        .set({
+          votes: myVotes,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true })
+        .catch(err=>{
+          alert('Could not write votes: ' + (err?.message || err));
+          console.error(err);
+        });
+    }
+  }catch(err){
+    alert('Firebase boot error: ' + (err?.message || err));
+    console.error(err);
   }
 })();
-// Wrap saveJson so any change to myVotes auto-pushes
-const _saveJson = saveJson;
-saveJson = function(k,v){
-  _saveJson(k,v);
-  if(k===votesKey) pushMyVotes();
-};
 </script>
 </body>
 </html>
