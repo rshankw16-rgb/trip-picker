@@ -4,11 +4,11 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>🪐 ARMAJ Trip Picker</title>
-<meta name="description" content="Curated, classy-psychedelic trip picker with live group voting. Apple-clean layout, cosmic animations, and image carousels." />
+<meta name="description" content="Curated, classy-psychedelic trip picker with live group voting. Apple-clean layout, cosmic animations, constellations, facts, and compare finalists." />
 
 <!-- Social -->
 <meta property="og:title" content="ARMAJ Trip Picker" />
-<meta property="og:description" content="Handpicked trips: Maharashtra forests, Nepal, Thailand, plus Goa–Hampi–Gokarna. Live vote, slick UI, and cosmic vibes." />
+<meta property="og:description" content="Handpicked trips: Maharashtra forests, Nepal, Thailand, plus Goa–Hampi–Gokarna. Live vote, slick UI, cosmic vibes." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://YOUR-USERNAME.github.io/YOUR-REPO/" />
 <meta property="og:image" content="https://YOUR-USERNAME.github.io/YOUR-REPO/cover.png" />
@@ -44,7 +44,8 @@
   @keyframes driftNeb { from{transform:translate3d(0,0,0)} to{transform:translate3d(2vmin,-2vmin,0)} }
 
   /* Canvases */
-  canvas#stars{ position:fixed; inset:0; z-index:-2; display:block }
+  canvas#stars{ position:fixed; inset:0; z-index:-3; display:block } /* moved to -3 to draw constellations above */
+  canvas#constel{ position:fixed; inset:0; z-index:-2; display:block; pointer-events:none } /* constellation lines */
   canvas#bursts{ position:fixed; inset:0; z-index:22; pointer-events:none; mix-blend-mode:screen }
 
   /* Header */
@@ -55,8 +56,8 @@
   .brand h1{font-size:18px; margin:0; font-weight:900; letter-spacing:.2px}
   .brand .emoji{font-size:22px}
   .bar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px}
-  input[type="search"]{flex:1; min-width:180px; background:#0a1024; color:var(--fg); border:1px solid #23315e; padding:10px 12px; border-radius:12px}
-  .btn{background:var(--btn); color:#eaf6ff; border:1px solid var(--btnb); padding:10px 12px; border-radius:12px; cursor:pointer; font-weight:800}
+  input[type="search"]{flex:1; min-width:180px; background:#0a1024; color:#eaf6ff; border:1px solid #23315e; padding:10px 12px; border-radius:12px}
+  .btn{background:var(--btn); color:#eaf6ff; border:1px solid #2a3569; padding:10px 12px; border-radius:12px; cursor:pointer; font-weight:800}
   .btn.hot{background:linear-gradient(90deg,#19d1a3,#87a9ff); color:#041515; border-color:#47e2d4}
   .btn.ghost{background:transparent}
   .hint{color:#9fb3eb; font-size:12px}
@@ -101,6 +102,7 @@
   .count{font-weight:900; color:var(--hot)}
   .liked{background:linear-gradient(90deg,#1cc9a3,#80f)!important; color:#021611!important; border-color:#44e4d8!important}
 
+  /* Floating buttons */
   .fab{position:fixed; right:14px; bottom:84px; z-index:25}
   .fab button{
     border-radius:999px; padding:12px 16px; font-size:16px;
@@ -109,12 +111,60 @@
     box-shadow: 0 6px 22px -6px rgba(123,92,255,.8), 0 0 0 1px rgba(167,139,250,.4) inset;
   }
 
+  .compareFab{position:fixed; left:14px; bottom:84px; z-index:25}
+  .compareFab button{
+    border-radius:999px; padding:12px 16px; font-size:16px;
+    background: linear-gradient(135deg, #24e0b4, #60a5ff);
+    border:none; color:#06131a; font-weight:900;
+    box-shadow: 0 6px 22px -6px rgba(36,224,180,.6), 0 0 0 1px rgba(96,165,255,.35) inset;
+  }
+
+  /* Bottom Sheet Leaderboard */
   .sheet{position:fixed; left:0; right:0; bottom:-70vh; height:70vh; background:var(--glass); border-top:1px solid var(--line); backdrop-filter:blur(10px) saturate(160%); border-top-left-radius:14px; border-top-right-radius:14px; z-index:24; transition:bottom .25s ease}
   .sheet.open{bottom:0}
   .sheet .drag{width:44px; height:5px; background:#30406f; border-radius:999px; margin:8px auto}
   .sheet .inside{max-width:1100px; margin:0 auto; padding:8px 14px 20px}
   .lead-row{display:flex; justify-content:space-between; gap:8px; padding:6px 0; border-bottom:1px dashed #213056}
   .lead-name{font-weight:800} .lead-score{font-weight:900; color:var(--hot)}
+
+  /* Facts Modal */
+  .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:30}
+  .modal.open{display:flex}
+  .modal .veil{position:absolute; inset:0; background:#000a; backdrop-filter: blur(2px)}
+  .modal .cardM{
+    position:relative; z-index:1; width:min(680px, calc(100% - 24px));
+    background: linear-gradient(180deg, rgba(11,17,38,.6), rgba(10,15,32,.5));
+    border:1px solid rgba(60,78,140,.5); border-radius:16px; padding:16px;
+    box-shadow:0 20px 60px -30px #000;
+    backdrop-filter: blur(10px) saturate(140%);
+  }
+  .modal h3{margin:0 0 6px; font-size:20px}
+  .modal p{margin:6px 0 10px; color:#d9e6ff}
+  .modal .facts{display:grid; gap:8px}
+  .modal .facts .row{display:flex; gap:8px; align-items:flex-start}
+  .modal .facts .row .b{min-width:120px; color:#bcd0ff}
+  .closeX{position:absolute; top:8px; right:8px; background:#111b3a; border:1px solid #3b4c88; color:#dfe9ff; border-radius:10px; padding:6px 10px; cursor:pointer}
+
+  /* Compare drawer */
+  .compare{position:fixed; inset:0; background:#000a; display:none; z-index:28}
+  .compare.open{display:block}
+  .compare .panel{
+    position:absolute; left:0; right:0; bottom:0; max-height:85vh; background:var(--glass);
+    border-top:1px solid var(--line); backdrop-filter: blur(10px) saturate(160%); border-top-left-radius:16px; border-top-right-radius:16px;
+    padding:10px 14px 18px;
+  }
+  .compare h3{margin:6px 0 10px}
+  .compareGrid{display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  .cmpCard{background:linear-gradient(180deg, rgba(13,18,42,.55), rgba(10,15,32,.45)); border:1px solid rgba(60,78,140,.45); border-radius:14px; overflow:hidden}
+  .cmpImg{height:140px; background:#0b1126}
+  .cmpImg img{width:100%; height:100%; object-fit:cover}
+  .cmpBody{padding:10px}
+  .cmpBody h4{margin:0 0 6px}
+  .cmpBody p{margin:6px 0; color:#dfe9ff}
+  .cmpBody .mini{font-size:12px; color:#b8c6e9}
+  .cmpClose{
+    position:absolute; right:12px; top:10px; border-radius:999px; padding:8px 12px; background:#101a3a; border:1px solid #3b4c88; color:#eaf2ff; cursor:pointer
+  }
 
   footer{position:sticky; bottom:0; background:var(--glass2); border-top:1px solid var(--line); z-index:20}
   footer .wrap{display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap}
@@ -130,6 +180,7 @@
 <body>
 <div class="nebula" aria-hidden="true"></div>
 <canvas id="stars" aria-hidden="true"></canvas>
+<canvas id="constel" aria-hidden="true"></canvas>
 <canvas id="bursts" aria-hidden="true"></canvas>
 
 <header>
@@ -151,8 +202,7 @@
   </div>
 </header>
 
-<!-- Sections -->
-<div class="sectionTitle"><h2>Maharashtra — forests, ridges, moody valleys</h2><p>Quiet gates, night skies, and jungle energy.</p></div>
+<div class="sectionTitle"><h2>Maharashtra — forests, ridges, moody valleys</h2><p>Quiet gates, night skies, jungle energy.</p></div>
 <main>
   <div class="grid" id="grid"></div>
 </main>
@@ -164,7 +214,9 @@
 <div class="sectionTitle"><h2>Goa + Hampi + Gokarna — west coast & temple stones</h2><p>Cliff trails, pocket beaches, boulder valleys, sunset rooftops.</p></div>
 
 <div class="fab"><button id="toggleSheet">🏆 Leaderboard</button></div>
+<div class="compareFab"><button id="toggleCompare">🧪 Compare Finalists</button></div>
 
+<!-- Bottom Sheet Leaderboard -->
 <div id="sheet" class="sheet" aria-hidden="true">
   <div class="drag"></div>
   <div class="inside">
@@ -175,6 +227,26 @@
       <button id="resetVotes" class="btn">🗑️ Reset My Device</button>
       <button id="resetGroup" class="btn">🗑️ Reset Imported</button>
     </div>
+  </div>
+</div>
+
+<!-- Facts Modal -->
+<div id="factsModal" class="modal" aria-hidden="true">
+  <div class="veil"></div>
+  <div class="cardM">
+    <button class="closeX" id="factsClose">✕</button>
+    <h3 id="factsTitle">Facts</h3>
+    <p id="factsSub" class="mini"></p>
+    <div class="facts" id="factsBody"></div>
+  </div>
+</div>
+
+<!-- Compare Drawer -->
+<div id="compare" class="compare" aria-hidden="true">
+  <div class="panel">
+    <button class="cmpClose" id="cmpClose">Close ✕</button>
+    <h3>Top 3 Finalists (by group votes)</h3>
+    <div id="cmpGrid" class="compareGrid"></div>
   </div>
 </div>
 
@@ -191,10 +263,9 @@
 </footer>
 
 <script>
-/* ----------------------- DATA (CURATED) ----------------------- */
-/* Each item now includes a 'imgs' array for the carousel and a more detailed 'expect' text. */
+/* ----------------------- DATA (CURATED + facts) ----------------------- */
 const DESTS = [
-  /* ===== Maharashtra (5) ===== */
+  /* ===== Maharashtra ===== */
   {
     id:'mh-koyna', cat:'Maharashtra',
     name:'Koyna–Vasota (Satara)',
@@ -202,10 +273,14 @@ const DESTS = [
     why:'Boat across Koyna backwaters + jungle trek to cliff-top Vasota Fort.',
     expect:'Dense evergreen corridors, wild-lake boat ride, ridge views. Base in Bamnoli; early permits for Vasota. Evenings by the reservoir.',
     tags:['forest','rivers','zero-crowd'],
-    imgs:[
-      srcUnsplash('koyna lake maharashtra'), srcUnsplash('vasota trek'), srcUnsplash('sahyadri forest')
-    ],
-    links:[['Vasota overview','https://en.wikipedia.org/wiki/Vasota_Fort']]
+    imgs:[srcUnsplash('koyna lake maharashtra'), srcUnsplash('vasota trek'), srcUnsplash('sahyadri forest')],
+    links:[['Vasota overview','https://en.wikipedia.org/wiki/Vasota_Fort']],
+    facts:{
+      bestTime:'Oct–Feb (clear, mild); Vasota trek needs forest permit.',
+      stays:'Simple lakeside homestays near Bamnoli; ask for early boat timings.',
+      vibe:'Wild lake energy; excellent night skies on crisp nights.',
+      map:'https://maps.google.com/?q=Bamnoli+Koyna'
+    }
   },
   {
     id:'mh-amboli', cat:'Maharashtra',
@@ -214,10 +289,14 @@ const DESTS = [
     why:'Shola cloud-forest, misty viewpoints, herp walks in monsoon—moody winters too.',
     expect:'Waterfall gullies, fog roads, quiet stays. Night walks (guided) show bio-lum bugs & amphibians. Calm alt-town vibe.',
     tags:['forest','mountains','zero-crowd'],
-    imgs:[
-      srcUnsplash('amboli ghat'), srcUnsplash('western ghats mist forest'), srcUnsplash('shola forest india')
-    ],
-    links:[['Amboli info','https://en.wikipedia.org/wiki/Amboli,_Maharashtra']]
+    imgs:[srcUnsplash('amboli ghat'), srcUnsplash('western ghats mist forest'), srcUnsplash('shola forest india')],
+    links:[['Amboli info','https://en.wikipedia.org/wiki/Amboli,_Maharashtra']],
+    facts:{
+      bestTime:'Nov–Feb for moody mist; monsoon for herping (but leeches!).',
+      stays:'Eco-lodges & homestays along the ghat road; ask for night walks.',
+      vibe:'Foggy roads, water drips, cozy cafés.',
+      map:'https://maps.google.com/?q=Amboli+Ghat'
+    }
   },
   {
     id:'mh-bhimashankar', cat:'Maharashtra',
@@ -226,10 +305,14 @@ const DESTS = [
     why:'Sacred groves + giant squirrels; mossy trails & temple town.',
     expect:'Mixed pilgrim & forest energy. Stay in village homestays or eco-lodges. Dawn canopy walks; night sky sparkles on clear winter nights.',
     tags:['forest','mountains','zero-crowd'],
-    imgs:[
-      srcUnsplash('bhimashankar forest'), srcUnsplash('indian giant squirrel'), srcUnsplash('sahyadri trek')
-    ],
-    links:[['WLS page','https://en.wikipedia.org/wiki/Bhimashankar_Wildlife_Sanctuary']]
+    imgs:[srcUnsplash('bhimashankar forest'), srcUnsplash('indian giant squirrel'), srcUnsplash('sahyadri trek')],
+    links:[['WLS page','https://en.wikipedia.org/wiki/Bhimashankar_Wildlife_Sanctuary']],
+    facts:{
+      bestTime:'Nov–Feb (cool, clear).',
+      stays:'Basic lodges at Bhimashankar; eco-stays in nearby villages.',
+      vibe:'Temple bells + forest birds; big squirrels in canopy.',
+      map:'https://maps.google.com/?q=Bhimashankar+Wildlife+Sanctuary'
+    }
   },
   {
     id:'mh-radhanagari', cat:'Maharashtra',
@@ -238,44 +321,64 @@ const DESTS = [
     why:'Foggy grasslands & gaur herds; blue-hour plateaus.',
     expect:'Stay around Dajipur. Dawn drives for bison & birds, day hikes to plateaus; simple, friendly lodges.',
     tags:['forest','zero-crowd'],
-    imgs:[
-      srcUnsplash('radhanagari sanctuary'), srcUnsplash('indian bison gaur'), srcUnsplash('plateau sahyadri')
-    ],
-    links:[['Sanctuary overview','https://en.wikipedia.org/wiki/Radhanagari_Wildlife_Sanctuary']]
+    imgs:[srcUnsplash('radhanagari sanctuary'), srcUnsplash('indian bison gaur'), srcUnsplash('plateau sahyadri')],
+    links:[['Sanctuary overview','https://en.wikipedia.org/wiki/Radhanagari_Wildlife_Sanctuary']],
+    facts:{
+      bestTime:'Nov–Feb (cool mornings with fog).',
+      stays:'Homestays at Dajipur; limited but warm hospitality.',
+      vibe:'Open plateaus, gaur herds, quiet roads.',
+      map:'https://maps.google.com/?q=Dajipur'
+    }
   },
   {
     id:'mh-nagzira', cat:'Maharashtra',
     name:'Navegaon–Nagzira TR',
     state:'Maharashtra',
     why:'Twin lakes, bamboo–sal mosaics, superb birding, less rush than big parks.',
-    expect:'Stay at Sillari/Nagzira gates; lake sunsets, bamboo trails. Good chances for deer, Indian gaur, birds; quieter gypsy routes.',
+    expect:'Stay at quieter gates; lake sunsets, bamboo trails. Good for deer, gaur, birds; calmer gypsy routes.',
     tags:['forest','rivers','zero-crowd'],
-    imgs:[
-      srcUnsplash('nagzira tiger reserve'), srcUnsplash('indian bamboo forest'), srcUnsplash('india lake forest sunset')
-    ],
-    links:[['Tiger Reserve','https://en.wikipedia.org/wiki/Nagzira_Wildlife_Sanctuary']]
+    imgs:[srcUnsplash('nagzira tiger reserve'), srcUnsplash('indian bamboo forest'), srcUnsplash('india lake forest sunset')],
+    links:[['Tiger Reserve','https://en.wikipedia.org/wiki/Nagzira_Wildlife_Sanctuary']],
+    facts:{
+      bestTime:'Nov–Mar (dry, better visibility).',
+      stays:'Forest rest houses & private eco-stays near gates.',
+      vibe:'Mirror lakes, bamboo rustle, birdsong.',
+      map:'https://maps.google.com/?q=Nagzira+Tiger+Reserve'
+    }
   },
 
-  /* ===== Nepal (3) ===== */
+  /* ===== Nepal ===== */
   {
     id:'np-pokhara', cat:'Nepal',
     name:'Pokhara + Mardi Ridge day-hikes',
     state:'Nepal',
     why:'Phewa lakeside chill, paraglide options, tea-house day hikes with Annapurna views.',
-    expect:'Base in Lakeside (quiet lane). Easy ridge walks (Sarangkot/Mardi area), boats at golden hour, café culture without chaos.',
+    expect:'Base in Lakeside (quiet lane). Easy ridge walks (Sarangkot/Mardi), boats at golden hour, café culture.',
     tags:['mountains','lakes','chill'],
     imgs:[srcUnsplash('pokhara lake'), srcUnsplash('annapurna range'), srcUnsplash('sarangkot sunrise pokhara')],
-    links:[['Pokhara','https://en.wikipedia.org/wiki/Pokhara']]
+    links:[['Pokhara','https://en.wikipedia.org/wiki/Pokhara']],
+    facts:{
+      bestTime:'Oct–Dec for crisp views; Mar–Apr for rhododendrons.',
+      stays:'Boutique lakeside hotels/hostels (quiet lanes off the main strip).',
+      vibe:'Chill cafés, boats, paragliding if windy gods smile.',
+      map:'https://maps.google.com/?q=Pokhara'
+    }
   },
   {
     id:'np-lang', cat:'Nepal',
     name:'Langtang lower trails (light)',
     state:'Nepal',
     why:'Alpine forests & village homestays without heavy logistics.',
-    expect:'Shorter tea-house sections fit a casual crew; yak pastures, pine scent, night skies. Keep it to easy lower segments.',
+    expect:'Short tea-house sections fit a casual crew; yak pastures, pine scent, night skies.',
     tags:['mountains','forest','teahouse'],
     imgs:[srcUnsplash('langtang nepal'), srcUnsplash('nepal pine forest'), srcUnsplash('himalayan village')],
-    links:[['Langtang','https://en.wikipedia.org/wiki/Langtang_National_Park']]
+    links:[['Langtang','https://en.wikipedia.org/wiki/Langtang_National_Park']],
+    facts:{
+      bestTime:'Oct–Nov and Mar–Apr (stable weather).',
+      stays:'Tea-houses; carry cash; keep days short.',
+      vibe:'Cedar smoke, prayer flags, open stars.',
+      map:'https://maps.google.com/?q=Langtang'
+    }
   },
   {
     id:'np-bardia', cat:'Nepal',
@@ -285,29 +388,47 @@ const DESTS = [
     expect:'Rustic lodges near park gates; float trips, jeep/walk safaris. Chilled town vibe, starlit nights.',
     tags:['forest','rivers','wildlife'],
     imgs:[srcUnsplash('bardia national park'), srcUnsplash('nepal jungle river'), srcUnsplash('nepal wildlife safari')],
-    links:[['Bardia','https://en.wikipedia.org/wiki/Bardiya_National_Park']]
+    links:[['Bardia','https://en.wikipedia.org/wiki/Bardiya_National_Park']],
+    facts:{
+      bestTime:'Nov–Mar (cool, fewer bugs).',
+      stays:'Owner-run lodges; ask about walking safaris and river floats.',
+      vibe:'Bird calls, warm afternoons, campfire nights.',
+      map:'https://maps.google.com/?q=Bardiya+National+Park'
+    }
   },
 
-  /* ===== Thailand (3) ===== */
+  /* ===== Thailand ===== */
   {
     id:'th-pai', cat:'Thailand',
     name:'Pai (Mae Hong Son loop)',
     state:'Thailand',
-    why:'Mountain valley town, hot springs, cafés; boho nights and waterfalls around.',
-    expect:'Rent scooters, loop to canyons & falls; mellow live music & market alleys, bamboo bridges.',
+    why:'Mountain valley town, hot springs, cafés; boho nights and waterfalls.',
+    expect:'Rent scooters, loop to canyons & falls; mellow live music & market alleys.',
     tags:['mountains','waterfalls','boho'],
     imgs:[srcUnsplash('pai thailand'), srcUnsplash('pai canyon'), srcUnsplash('thailand hot springs')],
-    links:[['Pai','https://en.wikipedia.org/wiki/Pai']]
+    links:[['Pai','https://en.wikipedia.org/wiki/Pai']],
+    facts:{
+      bestTime:'Nov–Feb (cooler, clearer).',
+      stays:'Bamboo bungalows by the river; book hot-spring hours.',
+      vibe:'Acoustic sets, lanterns, morning mists.',
+      map:'https://maps.google.com/?q=Pai+Thailand'
+    }
   },
   {
     id:'th-kph', cat:'Thailand',
     name:'Koh Phangan (quiet north)',
     state:'Thailand',
     why:'Secret coves & snorkel flats beyond the party beaches.',
-    expect:'Base near Haad Salad/Haad Yao; hammock cafés, sunset swim spots; longtail hops to bottle-green bays.',
+    expect:'Base near Haad Salad/Haad Yao; hammock cafés, sunset swim spots; longtail hops to green bays.',
     tags:['beach','snorkel','chill'],
     imgs:[srcUnsplash('koh phangan beach'), srcUnsplash('haad salad'), srcUnsplash('thailand snorkel reef')],
-    links:[['Koh Phangan','https://en.wikipedia.org/wiki/Ko_Pha-ngan']]
+    links:[['Koh Phangan','https://en.wikipedia.org/wiki/Ko_Pha-ngan']],
+    facts:{
+      bestTime:'Dec–Mar for sun; avoid days with rough seas if island-hopping.',
+      stays:'Hillside bungalows with bay views; scooter helpful.',
+      vibe:'Turquoise shallows, lazy brunches, sunset swims.',
+      map:'https://maps.google.com/?q=Haad+Salad'
+    }
   },
   {
     id:'th-krabi', cat:'Thailand',
@@ -317,29 +438,47 @@ const DESTS = [
     expect:'Stay Railay or Ao Nang (quiet lane). Day-trip longtails to Poda/Chicken. Golden-hour paddles.',
     tags:['beach','karst','kayak'],
     imgs:[srcUnsplash('railay beach'), srcUnsplash('krabi thailand islands'), srcUnsplash('thailand longtail boat')],
-    links:[['Krabi','https://en.wikipedia.org/wiki/Krabi_Province']]
+    links:[['Krabi','https://en.wikipedia.org/wiki/Krabi_Province']],
+    facts:{
+      bestTime:'Dec–Apr (drier).',
+      stays:'Bungalows near Railay West/East; book longtails early for day trips.',
+      vibe:'Karst silhouettes, mangrove inlets, mellow nights.',
+      map:'https://maps.google.com/?q=Railay+Beach'
+    }
   },
 
-  /* ===== West coast + stones (3) ===== */
+  /* ===== West coast + stones ===== */
   {
     id:'ka-hampi', cat:'Goa/Hampi/Gokarna',
     name:'Hampi + Anegundi/Sanapur',
     state:'Karnataka',
     why:'Boulder valleys, blue canals, coracle rides, psychedelic sunsets.',
-    expect:'Stay by Sanapur lake or Anegundi for hush. Sunrise boulders, temple ruins, sunset rooftops. Starry nights.',
+    expect:'Stay by Sanapur lake or Anegundi for hush. Sunrise boulders, temple ruins, sunset rooftops.',
     tags:['psy','culture','mountains'],
     imgs:[srcUnsplash('hampi boulders'), srcUnsplash('hampi temple'), srcUnsplash('anegundi sanapur')],
-    links:[['Hampi','https://en.wikipedia.org/wiki/Hampi']]
+    links:[['Hampi','https://en.wikipedia.org/wiki/Hampi']],
+    facts:{
+      bestTime:'Nov–Feb (cool mornings).',
+      stays:'Guesthouses around Sanapur/Anegundi; rent mopeds.',
+      vibe:'Rust-red stones, blue canals, stargaze rooftops.',
+      map:'https://maps.google.com/?q=Hampi+Sanapur'
+    }
   },
   {
     id:'ka-gokarna', cat:'Goa/Hampi/Gokarna',
     name:'Gokarna Quiet Arc',
     state:'Karnataka Coast',
     why:'Cliff trails to pocket beaches; biolum possible in shoulder season.',
-    expect:'Base near Kudle–Om ends or coves north. Hike cliff paths, café hop, dawn dips; simple, soulful stays.',
+    expect:'Base near Kudle–Om ends or coves north. Hike cliff paths, café hop, dawn dips.',
     tags:['beach','psy','chill'],
     imgs:[srcUnsplash('gokarna beach'), srcUnsplash('kudle beach'), srcUnsplash('india sea cliffs')],
-    links:[['Gokarna','https://en.wikipedia.org/wiki/Gokarna,_Karnataka']]
+    links:[['Gokarna','https://en.wikipedia.org/wiki/Gokarna,_Karnataka']],
+    facts:{
+      bestTime:'Nov–Mar (calm seas).',
+      stays:'Clifftop huts/cottages; carry torches for night trails.',
+      vibe:'Sea spray, drums at dusk, coconut smoke.',
+      map:'https://maps.google.com/?q=Kudle+Beach'
+    }
   },
   {
     id:'ga-goa', cat:'Goa/Hampi/Gokarna',
@@ -349,36 +488,39 @@ const DESTS = [
     expect:'South: Arossim–Betalbatim calm lanes. North: Mandrem–Morjim mellow ends. Cycle, shack-hop, creek sunsets.',
     tags:['beach','food','chill'],
     imgs:[srcUnsplash('goa beach'), srcUnsplash('goa sunset beach'), srcUnsplash('mandrem beach')],
-    links:[['Goa','https://en.wikipedia.org/wiki/Goa']]
+    links:[['Goa','https://en.wikipedia.org/wiki/Goa']],
+    facts:{
+      bestTime:'Nov–Mar (dry, sunny).',
+      stays:'Homestays/boutiques near the quieter belts; cycle rentals.',
+      vibe:'Creek sunsets, long sands, café crawls.',
+      map:'https://maps.google.com/?q=Mandrem+Beach'
+    }
   }
 ];
 
 /* Helper for Unsplash Source */
-function srcUnsplash(q){
-  // Random but stable-ish by query; size 1200x800 for crispness
-  return `https://source.unsplash.com/1200x800/?${encodeURIComponent(q)}`;
-}
+function srcUnsplash(q){ return `https://source.unsplash.com/1200x800/?${encodeURIComponent(q)}`; }
 
 /* -------------------- STATE -------------------- */
 const $ = s => document.querySelector(s);
-const votesKey = 'votes_device_v7';
-const groupKey = 'votes_group_v7';
+const votesKey = 'votes_device_v8';
+const groupKey = 'votes_group_v8';
 let myVotes = loadJson(votesKey) || {};
 let groupMembers = loadJson(groupKey) || [];
 function loadJson(k){ try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null} }
 function saveJson(k,v){ localStorage.setItem(k, JSON.stringify(v)) }
 
-/* ---------------- BACKGROUND ANIM (cosmos++) ---------------- */
+/* ---------------- COSMOS: stars + constellations + meteors ---------------- */
 const starCanvas = document.getElementById('stars'), starCtx = starCanvas.getContext('2d');
+const constelCanvas = document.getElementById('constel'), constCtx = constelCanvas.getContext('2d');
 const burstsCanvas = document.getElementById('bursts'), burstsCtx = burstsCanvas.getContext('2d');
 
 function fit(){
-  starCanvas.width = innerWidth; starCanvas.height = innerHeight;
-  burstsCanvas.width = innerWidth; burstsCanvas.height = innerHeight;
+  [starCanvas,constelCanvas,burstsCanvas].forEach(c=>{ c.width=innerWidth; c.height=innerHeight; });
 }
 addEventListener('resize', fit); fit();
 
-/* Twinkling stars (parallax layers) */
+/* Twinkling layers */
 const LAYERS = [
   { count: 180, speed: 0.02, size: 1.0, twJitter: 0.5, alpha: 0.9 },
   { count: 140, speed: 0.035, size: 1.4, twJitter: 0.6, alpha: 0.9 },
@@ -397,47 +539,56 @@ LAYERS.forEach((L, li)=>{
   }
 });
 
-/* Shooting stars + meteorites + cheeky “joint” comet */
-let streaks = [];      // quick shooting stars
-let meteors = [];      // chunky rocks + the “joint”
+/* Shooting stars + meteorites + “joint comet” */
+let streaks = [];
+let meteors = [];
 let lastMeteorAt = 0;
 
 function spawnShootingStar(){
   const y = Math.random()*innerHeight*0.5;
-  streaks.push({
-    x: Math.random()*innerWidth*0.6,
-    y, vx: 3 + Math.random()*2.5, vy: 1 + Math.random()*1.5,
-    life: 1, w: 70 + Math.random()*40
-  });
+  streaks.push({x: Math.random()*innerWidth*0.6, y, vx: 3+Math.random()*2.5, vy: 1+Math.random()*1.5, life:1, w:70+Math.random()*40});
 }
-function spawnMeteor(kind='rock'){ // kind: 'rock' | 'joint'
+function spawnMeteor(kind='rock'){
   const fromLeft = Math.random()<0.5;
   const y = 20 + Math.random()*innerHeight*0.6;
   const speed = 1.5 + Math.random()*1.2;
   const dir = fromLeft ? 1 : -1;
-  meteors.push({
-    kind,
-    x: fromLeft ? -60 : innerWidth+60,
-    y,
-    vx: dir*(speed*2.0),
-    vy: speed*0.5,
-    rot: Math.random()*Math.PI*2,
-    vr: (Math.random()*0.02-0.01)*dir,
-    life: 1.0,
-    puffTimer: 0 // for joint smoke
+  meteors.push({ kind,
+    x: fromLeft ? -60 : innerWidth+60, y,
+    vx: dir*(speed*2.0), vy: speed*0.5,
+    rot: Math.random()*Math.PI*2, vr:(Math.random()*0.02-0.01)*dir,
+    life:1.0, puffTimer:0
   });
 }
 function maybeSpawn(t){
-  if(Math.random() < 0.015) spawnShootingStar();
-  if (t - lastMeteorAt > 7000 + Math.random()*7000){
-    lastMeteorAt = t;
-    spawnMeteor(Math.random()<0.15 ? 'joint' : 'rock'); // tweak chance here
+  if(Math.random()<0.015) spawnShootingStar();
+  if(t-lastMeteorAt > 7000 + Math.random()*7000){ lastMeteorAt=t; spawnMeteor(Math.random()<0.15?'joint':'rock'); }
+}
+
+/* Constellations: connect nearby stars lightly, pulse */
+let constelPulse = 0;
+function drawConstellations(ts){
+  constCtx.clearRect(0,0,constelCanvas.width,constelCanvas.height);
+  constPulse = (Math.sin(ts/2000)+1)/2; // 0..1
+  const maxDist = 120;
+  constCtx.lineWidth = 0.6;
+  for(let i=0;i<stars.length;i+=4){ // sample to keep light
+    const s1 = stars[i];
+    for(let j=i+1;j<i+16 && j<stars.length;j+=4){
+      const s2 = stars[j];
+      const dx = s1.x - s2.x, dy = s1.y - s2.y;
+      const d = Math.hypot(dx,dy);
+      if(d < maxDist){
+        const a = (1 - d/maxDist) * 0.18 * (0.6 + 0.4*constPulse);
+        constCtx.strokeStyle = `rgba(190,210,255,${a})`;
+        constCtx.beginPath(); constCtx.moveTo(s1.x,s1.y); constCtx.lineTo(s2.x,s2.y); constCtx.stroke();
+      }
+    }
   }
 }
 
 function drawStars(ts){
   starCtx.clearRect(0,0,starCanvas.width,starCanvas.height);
-
   stars.forEach(s=>{
     const L = LAYERS[s.layer];
     s.y = (s.y + L.speed*s.z) % innerHeight;
@@ -451,8 +602,7 @@ function drawStars(ts){
   streaks.forEach(st=>{
     starCtx.globalAlpha = st.life;
     const grad = starCtx.createLinearGradient(st.x, st.y, st.x - st.w, st.y - st.w*0.33);
-    grad.addColorStop(0,'#cfe8ff');
-    grad.addColorStop(1,'rgba(255,255,255,0)');
+    grad.addColorStop(0,'#cfe8ff'); grad.addColorStop(1,'rgba(255,255,255,0)');
     starCtx.strokeStyle = grad; starCtx.lineWidth = 2;
     starCtx.beginPath(); starCtx.moveTo(st.x,st.y); starCtx.lineTo(st.x - st.w, st.y - st.w*0.33); starCtx.stroke();
     st.x += st.vx; st.y += st.vy; st.life *= 0.97;
@@ -461,8 +611,7 @@ function drawStars(ts){
 
   meteors.forEach(m=>{
     const tail = 90;
-    const tx = m.x - Math.cos(m.rot)*tail;
-    const ty = m.y - Math.sin(m.rot)*tail;
+    const tx = m.x - Math.cos(m.rot)*tail, ty = m.y - Math.sin(m.rot)*tail;
     const g = starCtx.createLinearGradient(m.x,m.y, tx,ty);
     g.addColorStop(0, m.kind==='joint' ? '#ffd3a3' : '#aee1ff');
     g.addColorStop(1, 'rgba(255,255,255,0)');
@@ -470,12 +619,9 @@ function drawStars(ts){
     starCtx.strokeStyle = g; starCtx.lineWidth = 3;
     starCtx.beginPath(); starCtx.moveTo(m.x,m.y); starCtx.lineTo(tx,ty); starCtx.stroke();
 
-    starCtx.save();
-    starCtx.translate(m.x,m.y);
-    starCtx.rotate(m.rot);
+    starCtx.save(); starCtx.translate(m.x,m.y); starCtx.rotate(m.rot);
     if(m.kind==='joint'){
-      starCtx.font = '22px system-ui, emoji';
-      starCtx.textAlign = 'center'; starCtx.textBaseline = 'middle';
+      starCtx.font='22px system-ui, emoji'; starCtx.textAlign='center'; starCtx.textBaseline='middle';
       starCtx.fillText('🚬',0,0);
       const rad = starCtx.createRadialGradient(12,0,1, 12,0,10);
       rad.addColorStop(0,'#ffb347'); rad.addColorStop(1,'rgba(255,179,71,0)');
@@ -483,26 +629,16 @@ function drawStars(ts){
       m.puffTimer -= 1;
       if(m.puffTimer<=0){
         m.puffTimer = 8 + Math.random()*10;
-        const puffCount = 2+Math.floor(Math.random()*2);
+        const puffCount=2+Math.floor(Math.random()*2);
         for(let i=0;i<puffCount;i++){
-          particles.push({
-            x: m.x + 8 + Math.random()*6,
-            y: m.y + (Math.random()*4-2),
-            vx: -0.5 - Math.random()*0.6,
-            vy: -0.2 - Math.random()*0.3,
-            g: -0.002,
-            a: 0.6,
-            t: 'd',
-            c: 'rgba(220,230,255,0.6)',
-            r: 2 + Math.random()*2
-          });
+          particles.push({ x:m.x+8+Math.random()*6, y:m.y+(Math.random()*4-2),
+            vx:-0.5-Math.random()*0.6, vy:-0.2-Math.random()*0.3, g:-0.002, a:0.6,
+            t:'d', c:'rgba(220,230,255,0.6)', r: 2+Math.random()*2 });
         }
       }
     } else {
-      starCtx.fillStyle = '#cfd7ff';
-      starCtx.beginPath(); starCtx.arc(0,0,4.5,0,Math.PI*2); starCtx.fill();
-      starCtx.fillStyle = '#6f7aa6';
-      starCtx.beginPath(); starCtx.arc(1.5,-1.5,2.2,0,Math.PI*2); starCtx.fill();
+      starCtx.fillStyle='#cfd7ff'; starCtx.beginPath(); starCtx.arc(0,0,4.5,0,Math.PI*2); starCtx.fill();
+      starCtx.fillStyle='#6f7aa6'; starCtx.beginPath(); starCtx.arc(1.5,-1.5,2.2,0,Math.PI*2); starCtx.fill();
     }
     starCtx.restore();
 
@@ -531,7 +667,8 @@ function burst(x,y,type='confetti',scale=1){
 }
 function drawBursts(){
   burstsCtx.clearRect(0,0,burstsCanvas.width,burstsCanvas.height);
-  particles.forEach(p=>{ p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.a*=0.985; burstsCtx.globalAlpha=p.a;
+  particles.forEach(p=>{
+    p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.a*=0.985; burstsCtx.globalAlpha=p.a;
     if(p.t==='d'){ burstsCtx.fillStyle=p.c; burstsCtx.beginPath(); burstsCtx.arc(p.x,p.y,p.r,0,Math.PI*2); burstsCtx.fill(); }
     else { burstsCtx.font=`${p.sz}px system-ui, emoji`; burstsCtx.fillText(p.txt,p.x,p.y); }
   });
@@ -555,15 +692,19 @@ function render(){
     const top = total === topScore() && total>0;
     const el = document.createElement('div'); el.className='card';
 
-    // carousel html
     const slides = d.imgs.map((src,i)=>`<div class="slide"><img src="${src}" alt="${d.name} photo ${i+1}"></div>`).join('');
     const dots = d.imgs.map((_,i)=>`<span class="dot ${i===0?'active':''}" data-dot="${d.id}" data-idx="${i}"></span>`).join('');
+
+    const links = (d.links||[]).map(([label,href])=>`<a class="btn ghost" target="_blank" rel="noopener" href="${href}">📖 ${label}</a>`).join('');
 
     el.innerHTML=`
       <div class="badge">${d.cat}${top?' · <span class="crown">👑 Top</span>':''}</div>
       <div class="titleRow">
         <div class="title">${d.name}</div>
-        <span class="hint">${d.state}</span>
+        <div>
+          <button class="btn ghost" data-facts="${d.id}" title="Facts & map">📌 Facts</button>
+          <span class="hint">${d.state}</span>
+        </div>
       </div>
 
       <div class="carousel" data-id="${d.id}">
@@ -582,7 +723,7 @@ function render(){
       <div class="actions">
         <button class="btn ${mine?'liked':''}" data-vote="${d.id}" aria-pressed="${mine}">${mine?'✅ Voted':'👍 Vote'}</button>
         <span class="count" id="c_${d.id}">${total}</span>
-        ${d.links?.map(([label,href])=>`<a class="btn ghost" target="_blank" rel="noopener" href="${href}">📖 ${label}</a>`).join('') || ''}
+        ${links}
         <button class="btn ghost" data-reset="${d.id}" title="Reset this card">♻️</button>
       </div>`;
     addLongPress(el.querySelector(`[data-vote="${d.id}"]`), ()=>{ delete myVotes[d.id]; saveJson(votesKey,myVotes); render(); });
@@ -601,7 +742,6 @@ function render(){
 
   $('#groupCount').textContent = `Members seen (including you): ${1 + groupMembers.length} · live`;
 
-  // Wire carousels
   wireCarousels();
 }
 
@@ -647,27 +787,17 @@ document.addEventListener('click', (e)=>{
     const dots = Array.from(document.querySelectorAll(`#dots_${cid} .dot`));
     dots.forEach((d,i)=> d.classList.toggle('active', i===idx));
   }
+
+  // facts modal
+  const factsId = e.target?.dataset?.facts;
+  if(factsId){ openFacts(factsId); }
 });
 
-function wireCarousels(){
-  // update dots on manual swipe
-  DESTS.forEach(d=>{
-    const track = document.getElementById(`trk_${d.id}`);
-    if(!track) return;
-    track.addEventListener('scroll', ()=>{
-      const w = track.clientWidth;
-      const idx = Math.round(track.scrollLeft / w);
-      const dots = Array.from(document.querySelectorAll(`#dots_${d.id} .dot`));
-      dots.forEach((dot,i)=> dot.classList.toggle('active', i===idx));
-    }, {passive:true});
-  });
-}
-
+/* Search / randomize / share etc */
 $('#q').addEventListener('input', render);
 $('#clear').addEventListener('click', ()=>{ $('#q').value=''; render(); });
 $('#randomize').addEventListener('click', ()=>{ DESTS.sort(()=>Math.random()-.5); render(); });
 
-/* Share/Import (optional) */
 $('#share').addEventListener('click', ()=>{
   const url = `${location.origin}${location.pathname}?votes=${encodeURIComponent(JSON.stringify(myVotes))}`;
   navigator.clipboard.writeText(url).then(()=> alert('Copied your votes link!'));
@@ -702,10 +832,75 @@ $('#importBtn').addEventListener('click', ()=>{
 $('#resetVotes').addEventListener('click', ()=>{ if(confirm('Reset ONLY this device’s votes?')){ myVotes={}; saveJson(votesKey,myVotes); render(); } });
 $('#resetGroup').addEventListener('click', ()=>{ if(confirm('Remove all imported friends and keep only this device?')){ groupMembers=[]; saveJson(groupKey, groupMembers); render(); } });
 
+/* Leaderboard & Compare toggles */
 const sheet = $('#sheet'); $('#toggleSheet').addEventListener('click', ()=> sheet.classList.toggle('open'));
+const cmp = $('#compare'); const cmpGrid = $('#cmpGrid');
+$('#toggleCompare').addEventListener('click', openCompare);
+$('#cmpClose').addEventListener('click', ()=> cmp.classList.remove('open'));
+
+/* Facts modal handlers */
+const factsModal = $('#factsModal');
+$('#factsClose').addEventListener('click', ()=> factsModal.classList.remove('open'));
+factsModal.querySelector('.veil').addEventListener('click', ()=> factsModal.classList.remove('open'));
+
+function wireCarousels(){
+  DESTS.forEach(d=>{
+    const track = document.getElementById(`trk_${d.id}`);
+    if(!track) return;
+    track.addEventListener('scroll', ()=>{
+      const w = track.clientWidth;
+      const idx = Math.round(track.scrollLeft / w);
+      const dots = Array.from(document.querySelectorAll(`#dots_${d.id} .dot`));
+      dots.forEach((dot,i)=> dot.classList.toggle('active', i===idx));
+    }, {passive:true});
+  });
+}
+
+/* Facts modal content */
+function openFacts(id){
+  const d = DESTS.find(x=>x.id===id); if(!d) return;
+  $('#factsTitle').textContent = d.name;
+  $('#factsSub').textContent = `${d.cat} · ${d.state}`;
+  const body = $('#factsBody'); body.innerHTML = '';
+  const rows = [
+    ['Best time', d.facts?.bestTime],
+    ['Where to stay', d.facts?.stays],
+    ['Vibe', d.facts?.vibe],
+    ['Map', d.facts?.map ? `<a class="btn hot" style="padding:6px 10px" target="_blank" rel="noopener" href="${d.facts.map}">Open in Maps</a>` : '']
+  ];
+  rows.forEach(([b,t])=>{
+    if(!t) return;
+    const row = document.createElement('div'); row.className='row';
+    row.innerHTML = `<div class="b">${b}</div><div class="t">${t}</div>`;
+    body.appendChild(row);
+  });
+  factsModal.classList.add('open');
+}
+
+/* Compare finalists */
+function openCompare(){
+  // pick top 3 by group votes
+  const top = [...DESTS].sort((a,b)=> groupTotalFor(b.id)-groupTotalFor(a.id)).slice(0,3);
+  cmpGrid.innerHTML='';
+  top.forEach(d=>{
+    const img = d.imgs?.[0] || srcUnsplash(d.name);
+    const el = document.createElement('div'); el.className='cmpCard';
+    el.innerHTML = `
+      <div class="cmpImg"><img src="${img}" alt="${d.name}"></div>
+      <div class="cmpBody">
+        <h4>${d.name}</h4>
+        <div class="mini">${d.cat} · ${d.state}</div>
+        <p><b>Why:</b> ${d.why}</p>
+        <p><b>Expect:</b> ${d.expect}</p>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px">${(d.links||[]).map(([l,h])=>`<a class="btn ghost" target="_blank" rel="noopener" href="${h}">📖 ${l}</a>`).join('')}</div>
+      </div>`;
+    cmpGrid.appendChild(el);
+  });
+  cmp.classList.add('open');
+}
 
 /* ---------------- RAF LOOP ---------------- */
-function loop(ts){ drawStars(ts); drawBursts(); requestAnimationFrame(loop); }
+function loop(ts){ drawStars(ts); drawConstellations(ts); drawBursts(); requestAnimationFrame(loop); }
 requestAnimationFrame(loop);
 
 /* ----- Import via URL once (non-realtime convenience) ----- */
@@ -729,19 +924,16 @@ requestAnimationFrame(loop);
 render();
 
 /* ================== FIREBASE REALTIME (ONE GLOBAL ROOM) ================== */
-/* Paste YOUR Firebase config here */
 const firebaseConfig = {
   apiKey: "AIzaSyAJfDC0lylk5QXN7o-Nu6xvHcy7vC41mKg",
   authDomain: "trip-planner-f33b2.firebaseapp.com",
   projectId: "trip-planner-f33b2"
 };
-/* ======================================================================== */
 
 function notConfigured(cfg){
   return !cfg || !cfg.apiKey || cfg.apiKey.includes('YOUR_API_KEY') || !cfg.projectId || cfg.projectId.includes('YOUR_PROJECT_ID');
 }
 const GLOBAL_ROOM = 'armaj-room';
-
 let uid = null, unsubMembers = null;
 
 (async function bootFirebase(){
