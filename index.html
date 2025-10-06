@@ -3,37 +3,21 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>🪐 ARMAJ Trip Picker</title>
-<meta name="description" content="Curated, classy-psychedelic trip picker with live group voting. Apple-clean layout, cosmic animations, constellations, facts, and compare finalists." />
-
-<!-- Social -->
-<meta property="og:title" content="ARMAJ Trip Picker" />
-<meta property="og:description" content="Handpicked trips: Maharashtra forests, Nepal, Thailand, plus Goa–Hampi–Gokarna. Live vote, slick UI, cosmic vibes." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://YOUR-USERNAME.github.io/YOUR-REPO/" />
-<meta property="og:image" content="https://YOUR-USERNAME.github.io/YOUR-REPO/cover.png" />
-<meta name="twitter:card" content="summary_large_image" />
+<title>🪐 ARMAJ Trip Picker — Thailand</title>
+<meta name="description" content="Two Thailand itineraries: Jungle+Gulf Party (Cheow Lan + Koh Phangan) and North Loop (Chiang Mai + Pai). Vote with your crew." />
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2284%22>🪐</text></svg>">
-
-<!-- Firebase (compat builds) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
 <style>
   :root{
     --fg:#eaf0ff; --muted:#b7c6e9; --line:#1a2342;
     --glass:#0a0f21cc; --glass2:#0a0e1ccc; --hot:#ffd166;
-    --btn:#0c1333; --btnb:#2a3569;
-    --cosmicPurple1:#7b5cff; --cosmicPurple2:#a78bfa;
-    --accent:#19d1a3;
+    --btn:#0c1333; --btnb:#2a3569; --accent:#19d1a3;
   }
   *{box-sizing:border-box}
   html,body{height:100%}
   body{margin:0; color:var(--fg); font-family: ui-sans-serif,system-ui,-apple-system,"SF Pro Text","Segoe UI",Roboto,Arial; background:#070a16; overflow-x:hidden}
 
-  /* Backdrop */
   .nebula{ position:fixed; inset:-25vmax; z-index:-3; filter:blur(80px) saturate(120%);
     background:
       radial-gradient(60vmax 40vmax at 10% 10%, #18223d 0%, transparent 60%),
@@ -42,13 +26,8 @@
     opacity:.85; animation: driftNeb 40s ease-in-out infinite alternate;
   }
   @keyframes driftNeb { from{transform:translate3d(0,0,0)} to{transform:translate3d(2vmin,-2vmin,0)} }
+  canvas#stars{ position:fixed; inset:0; z-index:-2; display:block }
 
-  /* Canvases */
-  canvas#stars{ position:fixed; inset:0; z-index:-3; display:block } /* moved to -3 to draw constellations above */
-  canvas#constel{ position:fixed; inset:0; z-index:-2; display:block; pointer-events:none } /* constellation lines */
-  canvas#bursts{ position:fixed; inset:0; z-index:22; pointer-events:none; mix-blend-mode:screen }
-
-  /* Header */
   header{position:sticky; top:0; z-index:20; background:var(--glass2); border-bottom:1px solid var(--line); backdrop-filter:blur(10px) saturate(160%)}
   .wrap{max-width:1100px; margin:0 auto; padding:12px 14px}
   .toprow{display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap}
@@ -56,21 +35,17 @@
   .brand h1{font-size:18px; margin:0; font-weight:900; letter-spacing:.2px}
   .brand .emoji{font-size:22px}
   .bar{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:8px}
-  input[type="search"]{flex:1; min-width:180px; background:#0a1024; color:#eaf6ff; border:1px solid #23315e; padding:10px 12px; border-radius:12px}
   .btn{background:var(--btn); color:#eaf6ff; border:1px solid #2a3569; padding:10px 12px; border-radius:12px; cursor:pointer; font-weight:800}
   .btn.hot{background:linear-gradient(90deg,#19d1a3,#87a9ff); color:#041515; border-color:#47e2d4}
   .btn.ghost{background:transparent}
   .hint{color:#9fb3eb; font-size:12px}
 
-  /* Sections */
   .sectionTitle{max-width:1100px; margin:8px auto 0; padding:0 14px; opacity:.95}
   .sectionTitle h2{margin:18px 0 8px; font-size:22px; letter-spacing:.3px}
   .sectionTitle p{margin:0 0 6px; color:#c9d7ff; font-size:14px}
 
-  /* Grid */
-  main .grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); padding:12px 14px 140px; max-width:1100px; margin:0 auto}
+  main .grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(310px,1fr)); padding:12px 14px 120px; max-width:1100px; margin:0 auto}
 
-  /* Card — more transparent */
   .card{
     background: linear-gradient(180deg, rgba(11,17,38,.35), rgba(10,15,32,.28));
     border: 1px solid rgba(32,40,77,.45);
@@ -85,7 +60,6 @@
   .tag{font-size:12px; padding:2px 8px; border-radius:999px; border:1px solid #2b3767; background:#0e1633aa}
   .why{color:#e7efff; font-size:14px; margin:6px 0 12px; line-height:1.45}
 
-  /* Carousel */
   .carousel{position:relative; border-radius:14px; overflow:hidden; border:1px solid rgba(60,78,140,.4); background:#0a0f20}
   .track{display:flex; scroll-snap-type:x mandatory; overflow:auto; gap:0; scroll-behavior:smooth}
   .track::-webkit-scrollbar{display:none}
@@ -102,50 +76,13 @@
   .count{font-weight:900; color:var(--hot)}
   .liked{background:linear-gradient(90deg,#1cc9a3,#80f)!important; color:#021611!important; border-color:#44e4d8!important}
 
-  /* Floating buttons */
-  .fab{position:fixed; right:14px; bottom:84px; z-index:25}
-  .fab button{
-    border-radius:999px; padding:12px 16px; font-size:16px;
-    background: linear-gradient(135deg, var(--cosmicPurple1), var(--cosmicPurple2));
-    border: none; color:#0b0b16; font-weight:900;
-    box-shadow: 0 6px 22px -6px rgba(123,92,255,.8), 0 0 0 1px rgba(167,139,250,.4) inset;
-  }
-
-  .compareFab{position:fixed; left:14px; bottom:84px; z-index:25}
-  .compareFab button{
-    border-radius:999px; padding:12px 16px; font-size:16px;
-    background: linear-gradient(135deg, #24e0b4, #60a5ff);
-    border:none; color:#06131a; font-weight:900;
-    box-shadow: 0 6px 22px -6px rgba(36,224,180,.6), 0 0 0 1px rgba(96,165,255,.35) inset;
-  }
-
-  /* Bottom Sheet Leaderboard */
-  .sheet{position:fixed; left:0; right:0; bottom:-70vh; height:70vh; background:var(--glass); border-top:1px solid var(--line); backdrop-filter:blur(10px) saturate(160%); border-top-left-radius:14px; border-top-right-radius:14px; z-index:24; transition:bottom .25s ease}
+  .sheet{position:fixed; left:0; right:0; bottom:-60vh; height:60vh; background:var(--glass); border-top:1px solid var(--line); backdrop-filter:blur(10px) saturate(160%); border-top-left-radius:14px; border-top-right-radius:14px; z-index:24; transition:bottom .25s ease}
   .sheet.open{bottom:0}
   .sheet .drag{width:44px; height:5px; background:#30406f; border-radius:999px; margin:8px auto}
   .sheet .inside{max-width:1100px; margin:0 auto; padding:8px 14px 20px}
   .lead-row{display:flex; justify-content:space-between; gap:8px; padding:6px 0; border-bottom:1px dashed #213056}
   .lead-name{font-weight:800} .lead-score{font-weight:900; color:var(--hot)}
 
-  /* Facts Modal */
-  .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:30}
-  .modal.open{display:flex}
-  .modal .veil{position:absolute; inset:0; background:#000a; backdrop-filter: blur(2px)}
-  .modal .cardM{
-    position:relative; z-index:1; width:min(680px, calc(100% - 24px));
-    background: linear-gradient(180deg, rgba(11,17,38,.6), rgba(10,15,32,.5));
-    border:1px solid rgba(60,78,140,.5); border-radius:16px; padding:16px;
-    box-shadow:0 20px 60px -30px #000;
-    backdrop-filter: blur(10px) saturate(140%);
-  }
-  .modal h3{margin:0 0 6px; font-size:20px}
-  .modal p{margin:6px 0 10px; color:#d9e6ff}
-  .modal .facts{display:grid; gap:8px}
-  .modal .facts .row{display:flex; gap:8px; align-items:flex-start}
-  .modal .facts .row .b{min-width:120px; color:#bcd0ff}
-  .closeX{position:absolute; top:8px; right:8px; background:#111b3a; border:1px solid #3b4c88; color:#dfe9ff; border-radius:10px; padding:6px 10px; cursor:pointer}
-
-  /* Compare drawer */
   .compare{position:fixed; inset:0; background:#000a; display:none; z-index:28}
   .compare.open{display:block}
   .compare .panel{
@@ -162,9 +99,24 @@
   .cmpBody h4{margin:0 0 6px}
   .cmpBody p{margin:6px 0; color:#dfe9ff}
   .cmpBody .mini{font-size:12px; color:#b8c6e9}
-  .cmpClose{
-    position:absolute; right:12px; top:10px; border-radius:999px; padding:8px 12px; background:#101a3a; border:1px solid #3b4c88; color:#eaf2ff; cursor:pointer
+  .cmpClose{ position:absolute; right:12px; top:10px; border-radius:999px; padding:8px 12px; background:#101a3a; border:1px solid #3b4c88; color:#eaf2ff; cursor:pointer }
+
+  .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:30}
+  .modal.open{display:flex}
+  .modal .veil{position:absolute; inset:0; background:#000a; backdrop-filter: blur(2px)}
+  .modal .cardM{
+    position:relative; z-index:1; width:min(740px, calc(100% - 24px));
+    background: linear-gradient(180deg, rgba(11,17,38,.6), rgba(10,15,32,.5));
+    border:1px solid rgba(60,78,140,.5); border-radius:16px; padding:16px;
+    box-shadow:0 20px 60px -30px #000;
+    backdrop-filter: blur(10px) saturate(140%);
   }
+  .modal h3{margin:0 0 6px; font-size:20px}
+  .modal p{margin:6px 0 10px; color:#d9e6ff}
+  .modal .facts{display:grid; gap:8px}
+  .modal .facts .row{display:flex; gap:8px; align-items:flex-start}
+  .modal .facts .row .b{min-width:120px; color:#bcd0ff}
+  .closeX{position:absolute; top:8px; right:8px; background:#111b3a; border:1px solid #3b4c88; color:#dfe9ff; border-radius:10px; padding:6px 10px; cursor:pointer}
 
   footer{position:sticky; bottom:0; background:var(--glass2); border-top:1px solid var(--line); z-index:20}
   footer .wrap{display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap}
@@ -180,41 +132,30 @@
 <body>
 <div class="nebula" aria-hidden="true"></div>
 <canvas id="stars" aria-hidden="true"></canvas>
-<canvas id="constel" aria-hidden="true"></canvas>
-<canvas id="bursts" aria-hidden="true"></canvas>
 
 <header>
   <div class="wrap">
     <div class="toprow">
-      <div class="brand"><span class="emoji">🪐</span><h1>ARMAJ Trip Picker</h1></div>
+      <div class="brand"><span class="emoji">🪐</span><h1>ARMAJ Trip Picker — Thailand</h1></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button id="share" class="btn hot">🔗 Share My Votes</button>
         <button id="shareGroup" class="btn">🌐 Share Group Totals</button>
       </div>
     </div>
     <div class="bar">
-      <input id="q" type="search" placeholder="Search destination, country, vibe…" />
-      <button id="clear" class="btn">Clear</button>
-      <button id="randomize" class="btn ghost">🎲 Randomize</button>
+      <span class="hint">Two options. Tap 👍 to vote, tap again to un-vote. Import friends’ links to see group totals.</span>
       <button id="importBtn" class="btn">⬇️ Import Votes</button>
-      <span class="hint">Live sync is ON (one global room). Share this page in WhatsApp and tap 👍.</span>
     </div>
   </div>
 </header>
 
-<div class="sectionTitle"><h2>Maharashtra — forests, ridges, moody valleys</h2><p>Quiet gates, night skies, jungle energy.</p></div>
+<div class="sectionTitle"><h2>Pick one</h2><p>We curated two paths. Both minimize transit; both are fun. Vote your vibe.</p></div>
 <main>
-  <div class="grid" id="grid"></div>
+  <div class="grid" id="itinGrid"></div>
 </main>
 
-<div class="sectionTitle"><h2>Nepal — mountain calm + lakeside flow</h2><p>Tea-house treks, warm homestays, mellow nights.</p></div>
-
-<div class="sectionTitle"><h2>Thailand — island coves & northern chill towns</h2><p>Easy logistics, night markets, waterfall days.</p></div>
-
-<div class="sectionTitle"><h2>Goa + Hampi + Gokarna — west coast & temple stones</h2><p>Cliff trails, pocket beaches, boulder valleys, sunset rooftops.</p></div>
-
-<div class="fab"><button id="toggleSheet">🏆 Leaderboard</button></div>
-<div class="compareFab"><button id="toggleCompare">🧪 Compare Finalists</button></div>
+<div class="fab" style="position:fixed; right:14px; bottom:84px; z-index:25"><button id="toggleSheet" class="btn hot">🏆 Leaderboard</button></div>
+<div class="compareFab" style="position:fixed; left:14px; bottom:84px; z-index:25"><button id="toggleCompare" class="btn">🧪 Compare Finalists</button></div>
 
 <!-- Bottom Sheet Leaderboard -->
 <div id="sheet" class="sheet" aria-hidden="true">
@@ -230,12 +171,12 @@
   </div>
 </div>
 
-<!-- Facts Modal -->
+<!-- Facts / Itinerary Modal -->
 <div id="factsModal" class="modal" aria-hidden="true">
   <div class="veil"></div>
   <div class="cardM">
     <button class="closeX" id="factsClose">✕</button>
-    <h3 id="factsTitle">Facts</h3>
+    <h3 id="factsTitle">Itinerary</h3>
     <p id="factsSub" class="mini"></p>
     <div class="facts" id="factsBody"></div>
   </div>
@@ -245,465 +186,114 @@
 <div id="compare" class="compare" aria-hidden="true">
   <div class="panel">
     <button class="cmpClose" id="cmpClose">Close ✕</button>
-    <h3>Top 3 Finalists (by group votes)</h3>
+    <h3>Compare the two</h3>
     <div id="cmpGrid" class="compareGrid"></div>
   </div>
 </div>
 
 <footer>
   <div class="wrap">
-    <div class="hint">Tap 👍 to vote (tap again to un-vote). Long-press 👍 to reset that card.</div>
+    <div class="hint">Long-press 👍 to reset that card. Share links with friends to merge votes.</div>
     <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap">
       <span id="groupCount" class="hint"></span>
-      <span id="roomPill" class="hint" style="display:inline">
-        · Room: <b id="roomCode">armaj-room</b> · live
-      </span>
+      <span id="roomPill" class="hint" style="display:inline">· Room: <b>armaj-th</b> · local-only</span>
     </div>
   </div>
 </footer>
 
 <script>
-/* ----------------------- DATA (CURATED + facts) ----------------------- */
-const DESTS = [
-  /* ===== Maharashtra ===== */
-  {
-    id:'mh-koyna', cat:'Maharashtra',
-    name:'Koyna–Vasota (Satara)',
-    state:'Maharashtra',
-    why:'Boat across Koyna backwaters + jungle trek to cliff-top Vasota Fort.',
-    expect:'Dense evergreen corridors, wild-lake boat ride, ridge views. Base in Bamnoli; early permits for Vasota. Evenings by the reservoir.',
-    tags:['forest','rivers','zero-crowd'],
-    imgs:[srcUnsplash('koyna lake maharashtra'), srcUnsplash('vasota trek'), srcUnsplash('sahyadri forest')],
-    links:[['Vasota overview','https://en.wikipedia.org/wiki/Vasota_Fort']],
-    facts:{
-      bestTime:'Oct–Feb (clear, mild); Vasota trek needs forest permit.',
-      stays:'Simple lakeside homestays near Bamnoli; ask for early boat timings.',
-      vibe:'Wild lake energy; excellent night skies on crisp nights.',
-      map:'https://maps.google.com/?q=Bamnoli+Koyna'
-    }
-  },
-  {
-    id:'mh-amboli', cat:'Maharashtra',
-    name:'Amboli Ghats',
-    state:'Maharashtra',
-    why:'Shola cloud-forest, misty viewpoints, herp walks in monsoon—moody winters too.',
-    expect:'Waterfall gullies, fog roads, quiet stays. Night walks (guided) show bio-lum bugs & amphibians. Calm alt-town vibe.',
-    tags:['forest','mountains','zero-crowd'],
-    imgs:[srcUnsplash('amboli ghat'), srcUnsplash('western ghats mist forest'), srcUnsplash('shola forest india')],
-    links:[['Amboli info','https://en.wikipedia.org/wiki/Amboli,_Maharashtra']],
-    facts:{
-      bestTime:'Nov–Feb for moody mist; monsoon for herping (but leeches!).',
-      stays:'Eco-lodges & homestays along the ghat road; ask for night walks.',
-      vibe:'Foggy roads, water drips, cozy cafés.',
-      map:'https://maps.google.com/?q=Amboli+Ghat'
-    }
-  },
-  {
-    id:'mh-bhimashankar', cat:'Maharashtra',
-    name:'Bhimashankar WLS',
-    state:'Maharashtra',
-    why:'Sacred groves + giant squirrels; mossy trails & temple town.',
-    expect:'Mixed pilgrim & forest energy. Stay in village homestays or eco-lodges. Dawn canopy walks; night sky sparkles on clear winter nights.',
-    tags:['forest','mountains','zero-crowd'],
-    imgs:[srcUnsplash('bhimashankar forest'), srcUnsplash('indian giant squirrel'), srcUnsplash('sahyadri trek')],
-    links:[['WLS page','https://en.wikipedia.org/wiki/Bhimashankar_Wildlife_Sanctuary']],
-    facts:{
-      bestTime:'Nov–Feb (cool, clear).',
-      stays:'Basic lodges at Bhimashankar; eco-stays in nearby villages.',
-      vibe:'Temple bells + forest birds; big squirrels in canopy.',
-      map:'https://maps.google.com/?q=Bhimashankar+Wildlife+Sanctuary'
-    }
-  },
-  {
-    id:'mh-radhanagari', cat:'Maharashtra',
-    name:'Radhanagari Bison Sanctuary',
-    state:'Maharashtra',
-    why:'Foggy grasslands & gaur herds; blue-hour plateaus.',
-    expect:'Stay around Dajipur. Dawn drives for bison & birds, day hikes to plateaus; simple, friendly lodges.',
-    tags:['forest','zero-crowd'],
-    imgs:[srcUnsplash('radhanagari sanctuary'), srcUnsplash('indian bison gaur'), srcUnsplash('plateau sahyadri')],
-    links:[['Sanctuary overview','https://en.wikipedia.org/wiki/Radhanagari_Wildlife_Sanctuary']],
-    facts:{
-      bestTime:'Nov–Feb (cool mornings with fog).',
-      stays:'Homestays at Dajipur; limited but warm hospitality.',
-      vibe:'Open plateaus, gaur herds, quiet roads.',
-      map:'https://maps.google.com/?q=Dajipur'
-    }
-  },
-  {
-    id:'mh-nagzira', cat:'Maharashtra',
-    name:'Navegaon–Nagzira TR',
-    state:'Maharashtra',
-    why:'Twin lakes, bamboo–sal mosaics, superb birding, less rush than big parks.',
-    expect:'Stay at quieter gates; lake sunsets, bamboo trails. Good for deer, gaur, birds; calmer gypsy routes.',
-    tags:['forest','rivers','zero-crowd'],
-    imgs:[srcUnsplash('nagzira tiger reserve'), srcUnsplash('indian bamboo forest'), srcUnsplash('india lake forest sunset')],
-    links:[['Tiger Reserve','https://en.wikipedia.org/wiki/Nagzira_Wildlife_Sanctuary']],
-    facts:{
-      bestTime:'Nov–Mar (dry, better visibility).',
-      stays:'Forest rest houses & private eco-stays near gates.',
-      vibe:'Mirror lakes, bamboo rustle, birdsong.',
-      map:'https://maps.google.com/?q=Nagzira+Tiger+Reserve'
-    }
-  },
+/* ---------- Minimal stars backdrop ---------- */
+const C=document.getElementById('stars'),X=C.getContext('2d'); function fit(){C.width=innerWidth; C.height=innerHeight} addEventListener('resize',fit); fit();
+const S=Array.from({length:240},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,z:0.6+Math.random()*0.8,t:Math.random()*6}));
+(function loop(t){ X.clearRect(0,0,C.width,C.height);
+  S.forEach(s=>{ s.y=(s.y+0.03*s.z)%innerHeight; const a=0.6+0.4*Math.sin(t*0.001+s.t); X.globalAlpha=a; X.fillStyle='#fff';
+    X.fillRect(s.x,s.y,1.2*s.z,1.2*s.z); }); requestAnimationFrame(loop);
+})(0);
 
-  /* ===== Nepal ===== */
-  {
-    id:'np-pokhara', cat:'Nepal',
-    name:'Pokhara + Mardi Ridge day-hikes',
-    state:'Nepal',
-    why:'Phewa lakeside chill, paraglide options, tea-house day hikes with Annapurna views.',
-    expect:'Base in Lakeside (quiet lane). Easy ridge walks (Sarangkot/Mardi), boats at golden hour, café culture.',
-    tags:['mountains','lakes','chill'],
-    imgs:[srcUnsplash('pokhara lake'), srcUnsplash('annapurna range'), srcUnsplash('sarangkot sunrise pokhara')],
-    links:[['Pokhara','https://en.wikipedia.org/wiki/Pokhara']],
-    facts:{
-      bestTime:'Oct–Dec for crisp views; Mar–Apr for rhododendrons.',
-      stays:'Boutique lakeside hotels/hostels (quiet lanes off the main strip).',
-      vibe:'Chill cafés, boats, paragliding if windy gods smile.',
-      map:'https://maps.google.com/?q=Pokhara'
-    }
-  },
-  {
-    id:'np-lang', cat:'Nepal',
-    name:'Langtang lower trails (light)',
-    state:'Nepal',
-    why:'Alpine forests & village homestays without heavy logistics.',
-    expect:'Short tea-house sections fit a casual crew; yak pastures, pine scent, night skies.',
-    tags:['mountains','forest','teahouse'],
-    imgs:[srcUnsplash('langtang nepal'), srcUnsplash('nepal pine forest'), srcUnsplash('himalayan village')],
-    links:[['Langtang','https://en.wikipedia.org/wiki/Langtang_National_Park']],
-    facts:{
-      bestTime:'Oct–Nov and Mar–Apr (stable weather).',
-      stays:'Tea-houses; carry cash; keep days short.',
-      vibe:'Cedar smoke, prayer flags, open stars.',
-      map:'https://maps.google.com/?q=Langtang'
-    }
-  },
-  {
-    id:'np-bardia', cat:'Nepal',
-    name:'Bardia National Park (alt to Chitwan)',
-    state:'Nepal',
-    why:'Wilder feel than Chitwan; riverine jungles, elephants, gharials.',
-    expect:'Rustic lodges near park gates; float trips, jeep/walk safaris. Chilled town vibe, starlit nights.',
-    tags:['forest','rivers','wildlife'],
-    imgs:[srcUnsplash('bardia national park'), srcUnsplash('nepal jungle river'), srcUnsplash('nepal wildlife safari')],
-    links:[['Bardia','https://en.wikipedia.org/wiki/Bardiya_National_Park']],
-    facts:{
-      bestTime:'Nov–Mar (cool, fewer bugs).',
-      stays:'Owner-run lodges; ask about walking safaris and river floats.',
-      vibe:'Bird calls, warm afternoons, campfire nights.',
-      map:'https://maps.google.com/?q=Bardiya+National+Park'
-    }
-  },
+/* ---------- Data: TWO itineraries ---------- */
+const srcUnsplash = q => `https://source.unsplash.com/1200x800/?${encodeURIComponent(q)}`;
 
-  /* ===== Thailand ===== */
+const ITINS = [
   {
-    id:'th-pai', cat:'Thailand',
-    name:'Pai (Mae Hong Son loop)',
-    state:'Thailand',
-    why:'Mountain valley town, hot springs, cafés; boho nights and waterfalls.',
-    expect:'Rent scooters, loop to canyons & falls; mellow live music & market alleys.',
-    tags:['mountains','waterfalls','boho'],
-    imgs:[srcUnsplash('pai thailand'), srcUnsplash('pai canyon'), srcUnsplash('thailand hot springs')],
-    links:[['Pai','https://en.wikipedia.org/wiki/Pai']],
+    id:'itin-cheowlan-phangan',
+    cat:'Thailand',
+    name:'Cheow Lan Lake + Koh Phangan (Party Wed)',
+    why:'Float on an emerald lake with wildlife safaris, then island party + recovery. Minimal travel, max vibe.',
+    imgs:[
+      srcUnsplash('cheow lan lake thailand'),
+      srcUnsplash('khao sok national park longtail'),
+      srcUnsplash('koh phangan beach sunset')
+    ],
+    tags:['jungle','boat-safari','floating-bungalows','party','recovery'],
     facts:{
-      bestTime:'Nov–Feb (cooler, clearer).',
-      stays:'Bamboo bungalows by the river; book hot-spring hours.',
-      vibe:'Acoustic sets, lanterns, morning mists.',
-      map:'https://maps.google.com/?q=Pai+Thailand'
-    }
+      bestTime:'Dec–Apr (drier on the Andaman/Jungle side; Gulf improves through Dec).',
+      stays:'Floating raft house on Cheow Lan → beachfront bungalow on Phangan.',
+      vibe:'Dawn mist, hornbills & gibbons, then turquoise bays & music.',
+      map:'https://maps.google.com/?q=Ratchaprapha+Pier'
+    },
+    days:[
+      ['Sun 14 (optional)','Bangkok soft-land: Grand Palace & Wat Pho → canal ride → Chinatown; optional techno warm-up (BEAM/Mustache).'],
+      ['Mon 15','Fly BKK→Surat Thani (URT). Van to Ratchaprapha Pier → long-tail to **floating bungalows**. Lunch, swim/kayak, **Pakarang/Coral Cave** (conditions), **sunset wildlife boat safari**, stargaze.'],
+      ['Tue 16','**Sunrise mist safari** (prime wildlife window). Boat back → van to Donsak → ferry to **Koh Phangan**. Easy sunset swim.'],
+      ['Wed 17','Light day: beach, Brunch, short **Than Sadet** waterfall hop. **Party at night** (goes into Thu).'],
+      ['Thu 18','Recovery on quiet north bays (**Haad Salad/Secret Beach**).'],
+      ['Fri 19 / Sat 20','Exit: Phangan→Samui ferry → fly USM→BKK. If leaving 20th, keep Fri as extra beach/chill.']
+    ]
   },
   {
-    id:'th-kph', cat:'Thailand',
-    name:'Koh Phangan (quiet north)',
-    state:'Thailand',
-    why:'Secret coves & snorkel flats beyond the party beaches.',
-    expect:'Base near Haad Salad/Haad Yao; hammock cafés, sunset swim spots; longtail hops to green bays.',
-    tags:['beach','snorkel','chill'],
-    imgs:[srcUnsplash('koh phangan beach'), srcUnsplash('haad salad'), srcUnsplash('thailand snorkel reef')],
-    links:[['Koh Phangan','https://en.wikipedia.org/wiki/Ko_Pha-ngan']],
+    id:'itin-chiangmai-pai',
+    cat:'Thailand',
+    name:'North Loop: Bangkok → Chiang Mai → Pai',
+    why:'Mountains, hot springs, canyons & waterfalls, ethical elephants, live music — low transit, high soul.',
+    imgs:[
+      srcUnsplash('chiang mai doi suthep sunrise'),
+      srcUnsplash('pai canyon thailand'),
+      srcUnsplash('thailand hot springs forest')
+    ],
+    tags:['mountains','hot-springs','waterfalls','boho','ethical-wildlife'],
     facts:{
-      bestTime:'Dec–Mar for sun; avoid days with rough seas if island-hopping.',
-      stays:'Hillside bungalows with bay views; scooter helpful.',
-      vibe:'Turquoise shallows, lazy brunches, sunset swims.',
-      map:'https://maps.google.com/?q=Haad+Salad'
-    }
-  },
-  {
-    id:'th-krabi', cat:'Thailand',
-    name:'Krabi islands (Railay–Koh Poda arc)',
-    state:'Thailand',
-    why:'Limestone towers, beach caves, kayak lagoons.',
-    expect:'Stay Railay or Ao Nang (quiet lane). Day-trip longtails to Poda/Chicken. Golden-hour paddles.',
-    tags:['beach','karst','kayak'],
-    imgs:[srcUnsplash('railay beach'), srcUnsplash('krabi thailand islands'), srcUnsplash('thailand longtail boat')],
-    links:[['Krabi','https://en.wikipedia.org/wiki/Krabi_Province']],
-    facts:{
-      bestTime:'Dec–Apr (drier).',
-      stays:'Bungalows near Railay West/East; book longtails early for day trips.',
-      vibe:'Karst silhouettes, mangrove inlets, mellow nights.',
-      map:'https://maps.google.com/?q=Railay+Beach'
-    }
-  },
-
-  /* ===== West coast + stones ===== */
-  {
-    id:'ka-hampi', cat:'Goa/Hampi/Gokarna',
-    name:'Hampi + Anegundi/Sanapur',
-    state:'Karnataka',
-    why:'Boulder valleys, blue canals, coracle rides, psychedelic sunsets.',
-    expect:'Stay by Sanapur lake or Anegundi for hush. Sunrise boulders, temple ruins, sunset rooftops.',
-    tags:['psy','culture','mountains'],
-    imgs:[srcUnsplash('hampi boulders'), srcUnsplash('hampi temple'), srcUnsplash('anegundi sanapur')],
-    links:[['Hampi','https://en.wikipedia.org/wiki/Hampi']],
-    facts:{
-      bestTime:'Nov–Feb (cool mornings).',
-      stays:'Guesthouses around Sanapur/Anegundi; rent mopeds.',
-      vibe:'Rust-red stones, blue canals, stargaze rooftops.',
-      map:'https://maps.google.com/?q=Hampi+Sanapur'
-    }
-  },
-  {
-    id:'ka-gokarna', cat:'Goa/Hampi/Gokarna',
-    name:'Gokarna Quiet Arc',
-    state:'Karnataka Coast',
-    why:'Cliff trails to pocket beaches; biolum possible in shoulder season.',
-    expect:'Base near Kudle–Om ends or coves north. Hike cliff paths, café hop, dawn dips.',
-    tags:['beach','psy','chill'],
-    imgs:[srcUnsplash('gokarna beach'), srcUnsplash('kudle beach'), srcUnsplash('india sea cliffs')],
-    links:[['Gokarna','https://en.wikipedia.org/wiki/Gokarna,_Karnataka']],
-    facts:{
-      bestTime:'Nov–Mar (calm seas).',
-      stays:'Clifftop huts/cottages; carry torches for night trails.',
-      vibe:'Sea spray, drums at dusk, coconut smoke.',
-      map:'https://maps.google.com/?q=Kudle+Beach'
-    }
-  },
-  {
-    id:'ga-goa', cat:'Goa/Hampi/Gokarna',
-    name:'Goa (Arossim–Betalbatim or Mandrem–Morjim)',
-    state:'Goa',
-    why:'Wide gold sands + good food; pick quieter belts, not the chaos.',
-    expect:'South: Arossim–Betalbatim calm lanes. North: Mandrem–Morjim mellow ends. Cycle, shack-hop, creek sunsets.',
-    tags:['beach','food','chill'],
-    imgs:[srcUnsplash('goa beach'), srcUnsplash('goa sunset beach'), srcUnsplash('mandrem beach')],
-    links:[['Goa','https://en.wikipedia.org/wiki/Goa']],
-    facts:{
-      bestTime:'Nov–Mar (dry, sunny).',
-      stays:'Homestays/boutiques near the quieter belts; cycle rentals.',
-      vibe:'Creek sunsets, long sands, café crawls.',
-      map:'https://maps.google.com/?q=Mandrem+Beach'
-    }
+      bestTime:'Nov–Feb (cooler, clearer in the north).',
+      stays:'Old City/Nimman in Chiang Mai, riverside bungalow in Pai.',
+      vibe:'Scooters, lantern nights, coffee culture, yoga/breathwork.',
+      map:'https://maps.google.com/?q=Chiang+Mai'
+    },
+    days:[
+      ['Sun 14 (optional)','Bangkok warm-up: canal ride + Chinatown or a rooftop; sleep early.'],
+      ['Mon 15','Fly BKK→CNX (Chiang Mai). Old City temple walk; sunset at **Doi Suthep** outlook; Nimman cafés.'],
+      ['Tue 16','Minivan **Chiang Mai→Pai** (3–3.5h). Check-in, **Pai Canyon** sunset, **Tha Pai Hot Springs** soak.'],
+      ['Wed 17','Scooter loop: **Mo Paeng/Pam Bok** waterfalls, Bamboo Bridge, cafés. (If you must party Wed, better to do Bangkok another time — this loop is mellow.)'],
+      ['Thu 18','Back to Chiang Mai. Afternoon **ethical elephant** visit (observation-only) or relax.'],
+      ['Fri 19 / Sat 20','**Doi Inthanon** day trip (highest peak, waterfalls, short forest trails) OR Sticky Waterfall. Fly CNX→BKK to depart.']
+    ]
   }
 ];
 
-/* Helper for Unsplash Source */
-function srcUnsplash(q){ return `https://source.unsplash.com/1200x800/?${encodeURIComponent(q)}`; }
-
-/* -------------------- STATE -------------------- */
+/* ---------- State & helpers ---------- */
 const $ = s => document.querySelector(s);
-const votesKey = 'votes_device_v8';
-const groupKey = 'votes_group_v8';
+const votesKey = 'votes_device_th_v1';
+const groupKey = 'votes_group_th_v1';
 let myVotes = loadJson(votesKey) || {};
 let groupMembers = loadJson(groupKey) || [];
 function loadJson(k){ try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null} }
 function saveJson(k,v){ localStorage.setItem(k, JSON.stringify(v)) }
 
-/* ---------------- COSMOS: stars + constellations + meteors ---------------- */
-const starCanvas = document.getElementById('stars'), starCtx = starCanvas.getContext('2d');
-const constelCanvas = document.getElementById('constel'), constCtx = constelCanvas.getContext('2d');
-const burstsCanvas = document.getElementById('bursts'), burstsCtx = burstsCanvas.getContext('2d');
-
-function fit(){
-  [starCanvas,constelCanvas,burstsCanvas].forEach(c=>{ c.width=innerWidth; c.height=innerHeight; });
-}
-addEventListener('resize', fit); fit();
-
-/* Twinkling layers */
-const LAYERS = [
-  { count: 180, speed: 0.02, size: 1.0, twJitter: 0.5, alpha: 0.9 },
-  { count: 140, speed: 0.035, size: 1.4, twJitter: 0.6, alpha: 0.9 },
-  { count: 90,  speed: 0.05, size: 1.8, twJitter: 0.7, alpha: 1.0 }
-];
-let stars = [];
-LAYERS.forEach((L, li)=>{
-  for(let i=0;i<L.count;i++){
-    stars.push({
-      layer: li,
-      x: Math.random()*innerWidth,
-      y: Math.random()*innerHeight,
-      z: 0.6 + Math.random()*0.6,
-      tw: 0.6 + Math.random()*L.twJitter
-    });
-  }
-});
-
-/* Shooting stars + meteorites + “joint comet” */
-let streaks = [];
-let meteors = [];
-let lastMeteorAt = 0;
-
-function spawnShootingStar(){
-  const y = Math.random()*innerHeight*0.5;
-  streaks.push({x: Math.random()*innerWidth*0.6, y, vx: 3+Math.random()*2.5, vy: 1+Math.random()*1.5, life:1, w:70+Math.random()*40});
-}
-function spawnMeteor(kind='rock'){
-  const fromLeft = Math.random()<0.5;
-  const y = 20 + Math.random()*innerHeight*0.6;
-  const speed = 1.5 + Math.random()*1.2;
-  const dir = fromLeft ? 1 : -1;
-  meteors.push({ kind,
-    x: fromLeft ? -60 : innerWidth+60, y,
-    vx: dir*(speed*2.0), vy: speed*0.5,
-    rot: Math.random()*Math.PI*2, vr:(Math.random()*0.02-0.01)*dir,
-    life:1.0, puffTimer:0
-  });
-}
-function maybeSpawn(t){
-  if(Math.random()<0.015) spawnShootingStar();
-  if(t-lastMeteorAt > 7000 + Math.random()*7000){ lastMeteorAt=t; spawnMeteor(Math.random()<0.15?'joint':'rock'); }
-}
-
-/* Constellations: connect nearby stars lightly, pulse */
-let constelPulse = 0;
-function drawConstellations(ts){
-  constCtx.clearRect(0,0,constelCanvas.width,constelCanvas.height);
-  constPulse = (Math.sin(ts/2000)+1)/2; // 0..1
-  const maxDist = 120;
-  constCtx.lineWidth = 0.6;
-  for(let i=0;i<stars.length;i+=4){ // sample to keep light
-    const s1 = stars[i];
-    for(let j=i+1;j<i+16 && j<stars.length;j+=4){
-      const s2 = stars[j];
-      const dx = s1.x - s2.x, dy = s1.y - s2.y;
-      const d = Math.hypot(dx,dy);
-      if(d < maxDist){
-        const a = (1 - d/maxDist) * 0.18 * (0.6 + 0.4*constPulse);
-        constCtx.strokeStyle = `rgba(190,210,255,${a})`;
-        constCtx.beginPath(); constCtx.moveTo(s1.x,s1.y); constCtx.lineTo(s2.x,s2.y); constCtx.stroke();
-      }
-    }
-  }
-}
-
-function drawStars(ts){
-  starCtx.clearRect(0,0,starCanvas.width,starCanvas.height);
-  stars.forEach(s=>{
-    const L = LAYERS[s.layer];
-    s.y = (s.y + L.speed*s.z) % innerHeight;
-    const a = 0.6 + 0.4*Math.sin((ts/7000 + s.x*0.002)*s.tw);
-    starCtx.globalAlpha = a * L.alpha;
-    starCtx.fillStyle = '#fff';
-    const sz = L.size*s.z;
-    starCtx.fillRect(s.x, s.y, sz, sz);
-  });
-
-  streaks.forEach(st=>{
-    starCtx.globalAlpha = st.life;
-    const grad = starCtx.createLinearGradient(st.x, st.y, st.x - st.w, st.y - st.w*0.33);
-    grad.addColorStop(0,'#cfe8ff'); grad.addColorStop(1,'rgba(255,255,255,0)');
-    starCtx.strokeStyle = grad; starCtx.lineWidth = 2;
-    starCtx.beginPath(); starCtx.moveTo(st.x,st.y); starCtx.lineTo(st.x - st.w, st.y - st.w*0.33); starCtx.stroke();
-    st.x += st.vx; st.y += st.vy; st.life *= 0.97;
-  });
-  streaks = streaks.filter(s=> s.life>0.06 && s.x>-100 && s.x<innerWidth+100 && s.y<innerHeight+100);
-
-  meteors.forEach(m=>{
-    const tail = 90;
-    const tx = m.x - Math.cos(m.rot)*tail, ty = m.y - Math.sin(m.rot)*tail;
-    const g = starCtx.createLinearGradient(m.x,m.y, tx,ty);
-    g.addColorStop(0, m.kind==='joint' ? '#ffd3a3' : '#aee1ff');
-    g.addColorStop(1, 'rgba(255,255,255,0)');
-    starCtx.globalAlpha = 0.9*m.life;
-    starCtx.strokeStyle = g; starCtx.lineWidth = 3;
-    starCtx.beginPath(); starCtx.moveTo(m.x,m.y); starCtx.lineTo(tx,ty); starCtx.stroke();
-
-    starCtx.save(); starCtx.translate(m.x,m.y); starCtx.rotate(m.rot);
-    if(m.kind==='joint'){
-      starCtx.font='22px system-ui, emoji'; starCtx.textAlign='center'; starCtx.textBaseline='middle';
-      starCtx.fillText('🚬',0,0);
-      const rad = starCtx.createRadialGradient(12,0,1, 12,0,10);
-      rad.addColorStop(0,'#ffb347'); rad.addColorStop(1,'rgba(255,179,71,0)');
-      starCtx.fillStyle = rad; starCtx.beginPath(); starCtx.arc(12,0,10,0,Math.PI*2); starCtx.fill();
-      m.puffTimer -= 1;
-      if(m.puffTimer<=0){
-        m.puffTimer = 8 + Math.random()*10;
-        const puffCount=2+Math.floor(Math.random()*2);
-        for(let i=0;i<puffCount;i++){
-          particles.push({ x:m.x+8+Math.random()*6, y:m.y+(Math.random()*4-2),
-            vx:-0.5-Math.random()*0.6, vy:-0.2-Math.random()*0.3, g:-0.002, a:0.6,
-            t:'d', c:'rgba(220,230,255,0.6)', r: 2+Math.random()*2 });
-        }
-      }
-    } else {
-      starCtx.fillStyle='#cfd7ff'; starCtx.beginPath(); starCtx.arc(0,0,4.5,0,Math.PI*2); starCtx.fill();
-      starCtx.fillStyle='#6f7aa6'; starCtx.beginPath(); starCtx.arc(1.5,-1.5,2.2,0,Math.PI*2); starCtx.fill();
-    }
-    starCtx.restore();
-
-    m.x += m.vx; m.y += m.vy; m.rot += m.vr; m.life *= 0.993;
-  });
-  meteors = meteors.filter(m=> m.life>0.05 && m.x>-120 && m.x<innerWidth+120 && m.y>-120 && m.y<innerHeight+200);
-
-  maybeSpawn(ts);
-}
-
-/* Vote bursts (front canvas) */
-burstsCtx.globalCompositeOperation='lighter';
-let particles=[];
-function burst(x,y,type='confetti',scale=1){
-  const N=24+Math.floor(Math.random()*16);
-  for(let i=0;i<N;i++){
-    const ang=Math.random()*Math.PI*2, sp=(Math.random()*2+1.5)*scale;
-    if(type==='emoji'){
-      const emojis=['✨','⭐','🌟','🪐','🌠','🌙','☄️','💫', Math.random()<0.08?'💩':'✨'];
-      particles.push({x,y,vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-1.5, g:0.05, a:1, t:'e', txt:emojis[Math.floor(Math.random()*emojis.length)], sz:16+Math.random()*10});
-    }else{
-      const hues=[170,195,260,320]; const h=hues[Math.floor(Math.random()*hues.length)];
-      particles.push({x,y,vx:Math.cos(ang)*sp, vy:Math.sin(ang)*sp-1.2, g:0.06, a:1, t:'d', c:`hsl(${h} 90% 70%)`, r:2+Math.random()*3});
-    }
-  }
-}
-function drawBursts(){
-  burstsCtx.clearRect(0,0,burstsCanvas.width,burstsCanvas.height);
-  particles.forEach(p=>{
-    p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.a*=0.985; burstsCtx.globalAlpha=p.a;
-    if(p.t==='d'){ burstsCtx.fillStyle=p.c; burstsCtx.beginPath(); burstsCtx.arc(p.x,p.y,p.r,0,Math.PI*2); burstsCtx.fill(); }
-    else { burstsCtx.font=`${p.sz}px system-ui, emoji`; burstsCtx.fillText(p.txt,p.x,p.y); }
-  });
-  particles=particles.filter(p=>p.a>0.04 && p.y<innerHeight+60 && p.x>-60 && p.x<innerWidth+60);
-}
-
-/* ---------------- RENDER ---------------- */
-function groupTotalFor(id){ let sum=myVotes[id]?1:0; for(const m of groupMembers){ if(m[id]) sum+=1; } return sum; }
-function topScore(){ return Math.max(0, ...DESTS.map(d=>groupTotalFor(d.id))); }
-
+/* ---------- Render cards ---------- */
 function render(){
-  const q = ($('#q').value||'').trim().toLowerCase();
-  const grid = $('#grid'); grid.innerHTML='';
-  const arr = DESTS
-    .filter(d => !q || d.name.toLowerCase().includes(q) || d.state.toLowerCase().includes(q) || d.cat.toLowerCase().includes(q) || d.tags.join(' ').includes(q))
-    .sort((a,b)=> +($('#sortVotes').dataset?.sorted==='true') ? (groupTotalFor(b.id)-groupTotalFor(a.id)) : 0);
-
-  arr.forEach(d=>{
+  const grid = $('#itinGrid'); grid.innerHTML='';
+  ITINS.forEach(d=>{
     const mine = !!myVotes[d.id];
     const total = groupTotalFor(d.id);
-    const top = total === topScore() && total>0;
     const el = document.createElement('div'); el.className='card';
 
     const slides = d.imgs.map((src,i)=>`<div class="slide"><img src="${src}" alt="${d.name} photo ${i+1}"></div>`).join('');
     const dots = d.imgs.map((_,i)=>`<span class="dot ${i===0?'active':''}" data-dot="${d.id}" data-idx="${i}"></span>`).join('');
 
-    const links = (d.links||[]).map(([label,href])=>`<a class="btn ghost" target="_blank" rel="noopener" href="${href}">📖 ${label}</a>`).join('');
-
-    el.innerHTML=`
-      <div class="badge">${d.cat}${top?' · <span class="crown">👑 Top</span>':''}</div>
+    el.innerHTML = `
+      <div class="badge">${d.cat}${total===topScore()&&total>0?' · <span>👑 Top</span>':''}</div>
       <div class="titleRow">
         <div class="title">${d.name}</div>
         <div>
-          <button class="btn ghost" data-facts="${d.id}" title="Facts & map">📌 Facts</button>
-          <span class="hint">${d.state}</span>
+          <button class="btn ghost" data-facts="${d.id}" title="Itinerary & map">📌 Itinerary</button>
         </div>
       </div>
 
@@ -717,13 +307,11 @@ function render(){
       </div>
 
       <div class="meta" style="margin-top:10px">${d.tags.map(t=>`<span class="tag">#${t}</span>`).join(' ')}</div>
-      <p class="why"><b>Why go:</b> ${d.why}</p>
-      <p class="why"><b>What to expect:</b> ${d.expect}</p>
+      <p class="why"><b>Why:</b> ${d.why}</p>
 
       <div class="actions">
         <button class="btn ${mine?'liked':''}" data-vote="${d.id}" aria-pressed="${mine}">${mine?'✅ Voted':'👍 Vote'}</button>
         <span class="count" id="c_${d.id}">${total}</span>
-        ${links}
         <button class="btn ghost" data-reset="${d.id}" title="Reset this card">♻️</button>
       </div>`;
     addLongPress(el.querySelector(`[data-vote="${d.id}"]`), ()=>{ delete myVotes[d.id]; saveJson(votesKey,myVotes); render(); });
@@ -732,7 +320,7 @@ function render(){
 
   // Leaderboard
   const container = $('#leaderboard'); container.innerHTML='';
-  const sorted = [...DESTS].sort((a,b)=>groupTotalFor(b.id)-groupTotalFor(a.id)).slice(0,12);
+  const sorted = [...ITINS].sort((a,b)=>groupTotalFor(b.id)-groupTotalFor(a.id));
   sorted.forEach((d,i)=>{
     const row = document.createElement('div');
     row.className='lead-row';
@@ -740,30 +328,22 @@ function render(){
     container.appendChild(row);
   });
 
-  $('#groupCount').textContent = `Members seen (including you): ${1 + groupMembers.length} · live`;
-
+  $('#groupCount').textContent = `Members seen (incl. you): ${1 + groupMembers.length}`;
   wireCarousels();
 }
+function groupTotalFor(id){ let sum=myVotes[id]?1:0; for(const m of groupMembers){ if(m[id]) sum+=1; } return sum; }
+function topScore(){ return Math.max(0, ...ITINS.map(d=>groupTotalFor(d.id))); }
 
-/* ---------------- EVENTS ---------------- */
+/* ---------- Events ---------- */
 function addLongPress(el, cb){ let t; el.addEventListener('touchstart', ()=>{ t=setTimeout(cb,600) }, {passive:true}); ['touchend','touchcancel','touchmove'].forEach(ev=> el.addEventListener(ev, ()=> clearTimeout(t), {passive:true})); }
 
 document.addEventListener('click', (e)=>{
-  // votes
   const id = e.target?.dataset?.vote;
-  if(id){
-    const wasOn = !!myVotes[id]; if(wasOn) delete myVotes[id]; else myVotes[id]=1;
-    saveJson(votesKey,myVotes);
-    const r = e.target.getBoundingClientRect();
-    const x = r.left + r.width/2, y = r.top + window.scrollY + r.height/2;
-    burst(x,y, Math.random()<0.5?'confetti':'emoji', wasOn?0.7:1.1);
-    render(); return;
-  }
-  // reset vote for a card
+  if(id){ const wasOn=!!myVotes[id]; if(wasOn) delete myVotes[id]; else myVotes[id]=1; saveJson(votesKey,myVotes); render(); return; }
+
   const reset = e.target?.dataset?.reset;
   if(reset){ delete myVotes[reset]; saveJson(votesKey,myVotes); render(); return; }
 
-  // carousel arrows
   const prev = e.target?.dataset?.prev;
   const next = e.target?.dataset?.next;
   if(prev || next){
@@ -777,7 +357,6 @@ document.addEventListener('click', (e)=>{
     dots.forEach((d,i)=> d.classList.toggle('active', i===idx));
   }
 
-  // dot nav
   if(e.target?.classList?.contains('dot')){
     const cid = e.target.dataset.dot;
     const idx = +e.target.dataset.idx;
@@ -788,36 +367,34 @@ document.addEventListener('click', (e)=>{
     dots.forEach((d,i)=> d.classList.toggle('active', i===idx));
   }
 
-  // facts modal
   const factsId = e.target?.dataset?.facts;
   if(factsId){ openFacts(factsId); }
 });
 
-/* Search / randomize / share etc */
-$('#q').addEventListener('input', render);
-$('#clear').addEventListener('click', ()=>{ $('#q').value=''; render(); });
-$('#randomize').addEventListener('click', ()=>{ DESTS.sort(()=>Math.random()-.5); render(); });
+/* Search/share/import only for votes */
+const votesKeyUrl = 'votes';
+const groupKeyUrl = 'group';
 
 $('#share').addEventListener('click', ()=>{
-  const url = `${location.origin}${location.pathname}?votes=${encodeURIComponent(JSON.stringify(myVotes))}`;
-  navigator.clipboard.writeText(url).then(()=> alert('Copied your votes link!'));
+  const url = `${location.origin}${location.pathname}?${votesKeyUrl}=${encodeURIComponent(JSON.stringify(myVotes))}`;
+  navigator.clipboard.writeText(url).then(()=> alert('Copied your votes link! Paste into the group.'));
 });
 $('#shareGroup').addEventListener('click', ()=>{
   const payload = [myVotes, ...groupMembers];
-  const url = `${location.origin}${location.pathname}?group=${encodeURIComponent(JSON.stringify(payload))}`;
+  const url = `${location.origin}${location.pathname}?${groupKeyUrl}=${encodeURIComponent(JSON.stringify(payload))}`;
   navigator.clipboard.writeText(url).then(()=> alert('Copied Group Totals link!'));
 });
 $('#importBtn').addEventListener('click', ()=>{
-  const link = prompt('Paste a friend’s link (from “Share My Votes”) or a Group Totals link.');
+  const link = prompt('Paste a friend’s “Share My Votes” link or a Group Totals link.');
   if(!link) return;
   try{
     const u = new URL(link);
-    const g = u.searchParams.get('group'); const v = u.searchParams.get('votes');
+    const g = u.searchParams.get(groupKeyUrl); const v = u.searchParams.get(votesKeyUrl);
     if(g){
       const arr = JSON.parse(decodeURIComponent(g));
       const set = new Set(groupMembers.map(m=>JSON.stringify(m)));
       arr.forEach(m=>{ const s=JSON.stringify(m); if(!set.has(s)){ groupMembers.push(m); set.add(s);} });
-      saveJson(groupKey, groupMembers); render(); alert('Imported group votes.'); return;
+      saveJson(groupKey, groupMembers); render(); alert('Imported group totals.'); return;
     }
     if(v){
       const obj = JSON.parse(decodeURIComponent(v));
@@ -828,7 +405,6 @@ $('#importBtn').addEventListener('click', ()=>{
     alert('No votes found.');
   }catch{ alert('Bad link.'); }
 });
-
 $('#resetVotes').addEventListener('click', ()=>{ if(confirm('Reset ONLY this device’s votes?')){ myVotes={}; saveJson(votesKey,myVotes); render(); } });
 $('#resetGroup').addEventListener('click', ()=>{ if(confirm('Remove all imported friends and keep only this device?')){ groupMembers=[]; saveJson(groupKey, groupMembers); render(); } });
 
@@ -843,44 +419,33 @@ const factsModal = $('#factsModal');
 $('#factsClose').addEventListener('click', ()=> factsModal.classList.remove('open'));
 factsModal.querySelector('.veil').addEventListener('click', ()=> factsModal.classList.remove('open'));
 
-function wireCarousels(){
-  DESTS.forEach(d=>{
-    const track = document.getElementById(`trk_${d.id}`);
-    if(!track) return;
-    track.addEventListener('scroll', ()=>{
-      const w = track.clientWidth;
-      const idx = Math.round(track.scrollLeft / w);
-      const dots = Array.from(document.querySelectorAll(`#dots_${d.id} .dot`));
-      dots.forEach((dot,i)=> dot.classList.toggle('active', i===idx));
-    }, {passive:true});
-  });
-}
-
-/* Facts modal content */
+/* Facts modal content (shows day-by-day) */
 function openFacts(id){
-  const d = DESTS.find(x=>x.id===id); if(!d) return;
-  $('#factsTitle').textContent = d.name;
-  $('#factsSub').textContent = `${d.cat} · ${d.state}`;
-  const body = $('#factsBody'); body.innerHTML = '';
+  const d = ITINS.find(x=>x.id===id); if(!d) return;
+  document.getElementById('factsTitle').textContent = d.name;
+  document.getElementById('factsSub').textContent = `${d.cat} · ${d.tags.map(t=>'#'+t).join(' ')}`;
+  const body = document.getElementById('factsBody'); body.innerHTML = '';
+
   const rows = [
+    ['Why', d.why],
     ['Best time', d.facts?.bestTime],
-    ['Where to stay', d.facts?.stays],
+    ['Stays', d.facts?.stays],
     ['Vibe', d.facts?.vibe],
     ['Map', d.facts?.map ? `<a class="btn hot" style="padding:6px 10px" target="_blank" rel="noopener" href="${d.facts.map}">Open in Maps</a>` : '']
   ];
-  rows.forEach(([b,t])=>{
-    if(!t) return;
-    const row = document.createElement('div'); row.className='row';
-    row.innerHTML = `<div class="b">${b}</div><div class="t">${t}</div>`;
+  rows.forEach(([b,t])=>{ if(!t) return; const row=document.createElement('div'); row.className='row'; row.innerHTML=`<div class="b">${b}</div><div class="t">${t}</div>`; body.appendChild(row); });
+
+  if(d.days?.length){
+    const row=document.createElement('div'); row.className='row';
+    row.innerHTML = `<div class="b">Itinerary</div><div class="t">${d.days.map(([k,v])=>`<div><b>${k}:</b> ${v}</div>`).join('')}</div>`;
     body.appendChild(row);
-  });
+  }
   factsModal.classList.add('open');
 }
 
-/* Compare finalists */
+/* Compare the two cards */
 function openCompare(){
-  // pick top 3 by group votes
-  const top = [...DESTS].sort((a,b)=> groupTotalFor(b.id)-groupTotalFor(a.id)).slice(0,3);
+  const top = [...ITINS].sort((a,b)=> groupTotalFor(b.id)-groupTotalFor(a.id)).slice(0,2);
   cmpGrid.innerHTML='';
   top.forEach(d=>{
     const img = d.imgs?.[0] || srcUnsplash(d.name);
@@ -889,21 +454,28 @@ function openCompare(){
       <div class="cmpImg"><img src="${img}" alt="${d.name}"></div>
       <div class="cmpBody">
         <h4>${d.name}</h4>
-        <div class="mini">${d.cat} · ${d.state}</div>
+        <div class="mini">${d.cat} · ${d.tags.map(t=>'#'+t).join(' ')}</div>
         <p><b>Why:</b> ${d.why}</p>
-        <p><b>Expect:</b> ${d.expect}</p>
-        <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:6px">${(d.links||[]).map(([l,h])=>`<a class="btn ghost" target="_blank" rel="noopener" href="${h}">📖 ${l}</a>`).join('')}</div>
+        <p><b>Highlights:</b> ${d.days.slice(0,3).map(dy=>dy[1]).join(' · ')}</p>
       </div>`;
     cmpGrid.appendChild(el);
   });
   cmp.classList.add('open');
 }
 
-/* ---------------- RAF LOOP ---------------- */
-function loop(ts){ drawStars(ts); drawConstellations(ts); drawBursts(); requestAnimationFrame(loop); }
-requestAnimationFrame(loop);
+/* Carousels */
+function wireCarousels(){
+  ITINS.forEach(d=>{
+    const track = document.getElementById(`trk_${d.id}`); if(!track) return;
+    track.addEventListener('scroll', ()=>{
+      const w=track.clientWidth; const idx=Math.round(track.scrollLeft/w);
+      const dots=Array.from(document.querySelectorAll(`#dots_${d.id} .dot`));
+      dots.forEach((dot,i)=> dot.classList.toggle('active', i===idx));
+    }, {passive:true});
+  });
+}
 
-/* ----- Import via URL once (non-realtime convenience) ----- */
+/* One-time: import from URL (?votes= / ?group=) */
 (function initImportFromURL(){
   const qs = new URLSearchParams(location.search);
   try{
@@ -922,83 +494,6 @@ requestAnimationFrame(loop);
   }catch{}
 })();
 render();
-
-/* ================== FIREBASE REALTIME (ONE GLOBAL ROOM) ================== */
-const firebaseConfig = {
-  apiKey: "AIzaSyAJfDC0lylk5QXN7o-Nu6xvHcy7vC41mKg",
-  authDomain: "trip-planner-f33b2.firebaseapp.com",
-  projectId: "trip-planner-f33b2"
-};
-
-function notConfigured(cfg){
-  return !cfg || !cfg.apiKey || cfg.apiKey.includes('YOUR_API_KEY') || !cfg.projectId || cfg.projectId.includes('YOUR_PROJECT_ID');
-}
-const GLOBAL_ROOM = 'armaj-room';
-let uid = null, unsubMembers = null;
-
-(async function bootFirebase(){
-  try{
-    if (notConfigured(firebaseConfig)) {
-      alert('Firebase is not configured.\nPaste your real firebaseConfig (apiKey, authDomain, projectId) into index.html and deploy again.');
-      console.warn('Missing/placeholder Firebase config.');
-      return;
-    }
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    await auth.signInAnonymously().catch(e=>{
-      alert('Firebase Auth error: ' + (e?.message || e));
-      console.error(e);
-    });
-
-    auth.onAuthStateChanged(user=>{
-      uid = user ? user.uid : null;
-      if (!uid) return;
-
-      if (unsubMembers) { unsubMembers(); unsubMembers = null; }
-      unsubMembers = db.collection('rooms').doc(GLOBAL_ROOM).collection('members')
-        .onSnapshot(snap=>{
-          groupMembers = [];
-          snap.forEach(doc=>{
-            if(doc.id !== uid){
-              const d = doc.data();
-              if(d && d.votes) groupMembers.push(d.votes);
-            }
-          });
-          saveJson(groupKey, groupMembers);
-          render();
-        }, err=>{
-          alert('Firestore listen error: ' + (err?.message || err));
-          console.error(err);
-        });
-
-      // Push my votes whenever they change
-      const _saveJson = saveJson;
-      saveJson = function(k,v){
-        _saveJson(k,v);
-        if (k === votesKey) pushMyVotes(db);
-      };
-      pushMyVotes(db);
-    });
-
-    function pushMyVotes(dbRef){
-      if(!uid) return;
-      dbRef.collection('rooms').doc(GLOBAL_ROOM).collection('members').doc(uid)
-        .set({
-          votes: myVotes,
-          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true })
-        .catch(err=>{
-          alert('Could not write votes: ' + (err?.message || err));
-          console.error(err);
-        });
-    }
-  }catch(err){
-    alert('Firebase boot error: ' + (err?.message || err));
-    console.error(err);
-  }
-})();
 </script>
 </body>
 </html>
